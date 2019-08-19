@@ -1,0 +1,109 @@
+---
+title: "UAG Report"
+output: pdf_document
+always_allow_html: yes
+header-includes: \usepackage{longtable} \usepackage{array} \usepackage{multirow} \usepackage{float} \usepackage{fancyhdr}\usepackage{colortbl} \usepackage{graphicx} \usepackage{eurosym} \usepackage{booktabs,xcolor} \pagestyle{fancy} \fancyhf{} \addtolength{\headheight}{1.0cm} \rhead{UAG Error Report - \today} \lhead{\includegraphics[width=6cm]{nglogo.jpg}} \rfoot{Page \thepage} \fancypagestyle{plain}{\pagestyle{fancy}} 
+---
+
+```{r, echo = FALSE}
+d1_r = input$dateRange_reporting[1]
+d2_r = input$dateRange_reporting[2]
+selected_r = seq(from = input$dateRange_reporting[1], to = input$dateRange_reporting[2], by = 'day')
+```
+
+Selected Dates: `r d1_r` to `r d2_r`.
+
+Selected Components: `r input$report_choices`
+
+#Daily UAG Reporting
+
+```{r,echo = FALSE,fig.height = 4}
+"##Shrinkage Plots"
+ug_p = tk_tbl(getactive()[selected_r,])
+
+nms <- paste("`", colnames(ug_p), "`", sep="")
+for(i in 2:ncol(getactive()))
+    {
+print(ggplot(ug_p, aes_string(x=nms[1],y=nms[i])) + geom_line())
+}
+
+
+```
+
+```{r,echo = FALSE}
+if('Daily Balancing Errors' %in% input$report_choices  | 'All' %in% input$report_choices )
+{
+  "##Daily UAG Balancing Errors"
+  u = u_data()
+u1 = (u[[3]])
+
+u2 = (u[[4]])
+
+UAG= u[[2]]
+u1[is.nan(u1)] = 2e8
+u2[is.nan(u2)] = -2e8
+for(i in 1:nrow(u1))
+{
+ for(j in 1:ncol(u1))
+ {
+   if(u1[i,j] > UAG[i]){u1[i,j] =0}
+   if(u2[i,j] < UAG[i]){u2[i,j] =0}
+ }
+}
+u1_f = which(apply(u1,1, function(x){sum(x!=0)})>0)
+u2_f = which(apply(u2,1, function(x){sum(x!=0)})>0)
+colnames(u1) = c('UAG','Bol','Legacy','Anom','ETS','ARP')
+colnames(u2) = c('UAG','Bol','Legacy','Anom','ETS','ARP')
+
+mg= rbind(u1[u1_f,],u2[u2_f,])
+mg = as.data.frame(mg)
+ 
+mg[,1] = UAG[c(u1_f,u2_f)]
+#library(kableExtra)
+options(knitr.table.format = "latex")
+
+kable(mg, digits = 12)  %>%kable_styling(latex_options = "striped")
+}
+
+```
+
+```{r, echo=FALSE}
+if('Changepoints' %in% input$report_choices  | 'All' %in% input$report_choices )
+{
+  "##Changepoints"
+   d=   getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2]
+   plot(cusum(d, title = 'Cumulative sum control chart', se.shift = input$control_cpt))
+   d=   as.numeric(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2])
+    d=(cpt.mean(d, method = 'BinSeg',minseglen = 10,Q=input$control_cpt3))
+    print(d)
+    plot(d)
+   d=   as.numeric(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2])
+    d=(cpt.meanvar(d, method = 'PELT',minseglen=10))
+      print(d)
+      plot(d)
+       d=   as.numeric(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2])
+    plot(bcp(d,p0 = input$control_cpt2))
+}
+
+```
+
+```{r, echo= FALSE}
+if('Historic Performance' %in% input$report_choices  | 'All' %in% input$report_choices )
+{
+  "##Historic Performance"
+ UG = (getactive()['2012/',input$inp2])
+ sums = apply.weekly(UG, sum)
+ sumsw = apply.monthly(UG, sum)
+ sumsq = apply.quarterly(UG, sum)
+ sumsy = apply.yearly(UG, sum)
+ 
+  sums_a = apply.weekly(UG,function(x){sum(abs(x))})
+ sumsw_a = apply.monthly(UG, function(x){sum(abs(x))})
+ sumsq_a = apply.quarterly(UG, function(x){sum(abs(x))})
+ sumsy_a = apply.yearly(UG, function(x){sum(abs(x))})
+}
+
+```
+
+
+
