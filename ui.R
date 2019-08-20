@@ -48,7 +48,10 @@ conditionalPanel(background = 'light-blue',"input.container === 'day_2'",hr(),di
               selected = c("Interrupts",'Quantile','Extreme')), div(style="display:inline-block",actionBttn('calculate_anom','Calculate',block=TRUE, style = 'fill'),style="width: 80%; float:left")
   )
 ))
-body <- dashboardBody( useShinyalert(),tags$head(tags$script(HTML('
+
+#tags$head(tags$style(HTML(".small-box {height: 90px}"))),   solved bug 
+
+body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                            Shiny.addCustomMessageHandler("jsCode",
                                                                   function(message) {
                                                                   eval(message.value);

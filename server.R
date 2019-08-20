@@ -508,6 +508,13 @@ output$excess_u = renderValueBox({
   }) 
 
   output$uag_prc <- renderValueBox({
+
+    valueBox(countupOutput('c_1'),
+      "Over Threshold", icon = icon("list"),
+      color = 'light-blue')
+  })
+  
+  output$c_1 = renderCountup({
     opts = list(
       useEasing = TRUE, 
       useGrouping = TRUE, 
@@ -517,13 +524,17 @@ output$excess_u = renderValueBox({
       suffix = '%' 
     )
     v=round(nrow(updatefilter())/ length(seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day')),2)*100
-
-    
-    valueBox(countup(count = v, start = 0, options = opts),
-      "Over Threshold", icon = icon("list"),
-      color = 'light-blue')
+    cc= countup(count = v, start = 0, options = opts)
+    cc
   })
   output$uag_num <- renderValueBox({
+
+    valueBox(countupOutput('c_2')
+      ,"Days over threshold", icon = icon("list"),
+      color = 'light-blue')
+  })
+  
+  output$c_2 = renderCountup({
     opts = list(
       useEasing = TRUE, 
       useGrouping = TRUE, 
@@ -531,9 +542,9 @@ output$excess_u = renderValueBox({
       decimal = '.'
     )
     v2= paste0(nrow(updatefilter()))
-    valueBox(countup(count = v2, start = 0, options = opts)
-      ,"Days over threshold", icon = icon("list"),
-      color = 'light-blue')
+    
+    
+    countup(count = v2, start = 0, options = opts)
   })
   output$uag_t <- renderValueBox({
     cc = length(d()@cpts)-1
@@ -1276,7 +1287,8 @@ output$excess_u = renderValueBox({
     ds = which(dat[,1] %in% lp[,1])
     dat$Anomalies = NA
     dat$Anomalies[ds] = dat[ds,2]
-    YLS = c(max(c(dat[,2], dat[,3]))*1.1, min(c(dat[,2], dat[,4]))*1.1)
+    YLS = c(max(c(dat[,2], dat[,3]))*1.1, min(c(dat[,2], dat[,4]))*1.1)/1e6
+    dat[,-1]= dat[,-1]/1e6
     o= colnames(dat)
     
     
@@ -1288,8 +1300,8 @@ output$excess_u = renderValueBox({
     if(length(s))
     {
       xAxis = updatefilter()[s,1]
-      yAxis = updatefilter()[s,2]
-      value = round(updatefilter()[s,2]/1e6,2)
+      yAxis = updatefilter()[s,2]/1e6
+      value = round(updatefilter()[s,2]/1e6,1)
       l =list(xAxis =xAxis,yAxis = yAxis,value= value)
       e_plot = e_plot %>% e_mark_point('Anomalies', data = l)
     }
