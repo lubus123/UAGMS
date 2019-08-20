@@ -29,7 +29,7 @@ library(xts)
 
 DL_ENABLE = FALSE ##prevent data updateing by setting FALSE
 
-last_update <- read_csv("test.csv") # read values for latest sync
+last_update <- test <- read_csv("test.csv", col_types = cols(`Last Updated` = col_character()))
 
 processuag = function(){  ## UAG Loading function
   ttx <<- NULL

@@ -544,13 +544,9 @@ output$excess_u = renderValueBox({
   })
   
   
-  output$sync_table = renderTable({
+  output$sync_table =renderTable({
     
-    df = last_update
-    df[1,2]= as.character(df[1,2])
-    df[2,2]= as.character(df[2,2])
-    df[3,2]= as.character(df[3,2])
-    df
+ last_update
   })
   
   
@@ -1355,7 +1351,7 @@ output$excess_u = renderValueBox({
       
       incProgress(0.33, message = paste("Updating Demand"))
       rnames = c('Shrinkage', 'Entry', 'Exit')
-      last_update[1,2] = as.character(Sys.Date())
+      last_update[,2] = as.character(Sys.Date())
       
       
       
@@ -1368,6 +1364,14 @@ output$excess_u = renderValueBox({
       shinyalert("Update complete", "Databases are now synced.", type = "success")
     })
   })
+  
+  getPage<-function() {
+    return(includeHTML("userguide.html"))
+  }
+  output$userguide<-renderUI({getPage()})
+  
+  
+  
   
   #keep in config if incomplete#
   cobs = observeEvent(input$container,{

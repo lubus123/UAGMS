@@ -86,27 +86,27 @@ body <- dashboardBody( useShinyalert(),tags$head(tags$script(HTML('
                 
                 
                 
-                ),tabItem(tabName = "about", box(status='primary',title ='About',width =12,column(width = 11, 
-                                  fluidRow(
-                                             align = "center",h1('UAGMS'),h4('Unnacounted for Gas Management Suite'),
-                                             'Version .1 Alpha ',br(),'For Queries, contact lubomir.botev@manchester.ac.uk',
-                                             br(), 'Analytics performed in  R (GPL-2 | GPL-3)', br(), 'Developed at the University of Manchester',br(),tags$img(src='mcrlogo.jpg',height='60',width='160'),br(),'2019'))
-                                           ) ),
+                ),tabItem(tabName = "about",fluidRow( box(status='primary',title ='Help',width =12,column(width = 11,height = 1000,htmlOutput('userguide'))),box(status='primary',title ='About',width =12,column(width = 11, 
+                                                                                                                                                                                                         fluidRow(
+                                                                                                                                                                                                           align = "center",h1('UAGMS'),h4('Unnacounted for Gas Management Suite'),
+                                                                                                                                                                                                           'Version .1 Alpha ',br(),'For Queries, contact lubomir.botev@manchester.ac.uk',
+                                                                                                                                                                                                           br(), 'Analytics performed in  R (GPL-2 | GPL-3)', br(), 'Developed at the University of Manchester',br(),tags$img(src='mcrlogo.jpg',height='60',width='160'),br(),'2019')))
+                )),
         tabItem(tabName = "uag_monitor",
                 
                 fluidRow(valueBoxOutput("uag_prc"),valueBoxOutput("uag_num"),valueBoxOutput("uag_t")),
                 fluidRow(column(width = 12, {
                   
-                  box(status = 'primary',echarts4rOutput("echartsu"), width = NULL)
+                  box(title = 'UAG Time series',status = 'primary',echarts4rOutput("echartsu"), width = NULL)
                 }   ))
                 
                 , fluidRow(
-                  column(8, {box(width = NULL,status = 'primary',
+                  column(8, {box(title = 'UAG days exceeding limits',width = NULL,status = 'primary',
                                  DT::dataTableOutput('ex')) ##show up flagged values here
                     
                   }), column (4,
                               
-                              box( background = 'light-blue',width = NULL, dateRangeInput('dateRange',
+                              box(title = 'Options', background = 'light-blue',width = NULL, dateRangeInput('dateRange',
                                                                                                                        label = 'Date range input: yyyy-mm-dd',
                                                                                                                        start = Sys.Date() - 200, end = Sys.Date() -30
                               ),selectInput('type', 'Plot Style', c('l','h','b','p'), selected = 'b'), {
