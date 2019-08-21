@@ -36,8 +36,11 @@ library(timetk)
 library(tibbletime)
 library(anomalize)
 server <- function(input, output,session) {
+  show_d<<- 0
+  focusday2= list()
+  analytics_holder = list()
   firstb = TRUE
-  
+
   getactive = function(){if(!input$id & !is.null(input$file1)){
    
     
@@ -47,7 +50,10 @@ server <- function(input, output,session) {
      
       return(ttx)
     }}
-  
+  output$display_day = renderText({
+   
+    return(show_d)})
+  outputOptions(output, "display_day", suspendWhenHidden = FALSE,priority = 2)
   getexit = function(){
     if(!input$switch_exit & !is.null(input$file_exit))
     {
@@ -80,7 +86,7 @@ server <- function(input, output,session) {
   source('functions.R') ## Functions used throughout
   source('download.R') ## Download function
   source('dataloading.R') ## data initialisation
- 
+  
   
   highlight <- function(x, value, col.value, col=NA, ...){
     hst <- hist(x, ...)
@@ -107,9 +113,9 @@ server <- function(input, output,session) {
      if(getmode())
      {
        leafletProxy("map") %>%  clearMarkers() %>% addPulseMarkers(
-         lng = as.numeric(dllist[which(match(dllist$Name,get_nodes()[input$node_select_rows_selected,]$Name) ==1)[1],'lon']), lat = as.numeric(dllist[which(match(dllist$Name,get_nodes()[input$node_select_rows_selected,]$Name) ==1)[1],'lat']),
-         label = get_nodes()[input$node_select_rows_selected,]$Name,
-         icon = iconSet[1]  ) %>% setView(lng = as.numeric(dllist[which(match(dllist$Name,get_nodes()[input$node_select_rows_selected,]$Name) ==1)[1],'lon']), lat = as.numeric(dllist[which(match(dllist$Name,get_nodes()[input$node_select_rows_selected,]$Name) ==1)[1],'lat']), zoom = 6)  
+         lng = as.numeric(dllist[which(match(dllist$Name,get_analytics()$Table[input$node_select_rows_selected,]$Name) ==1)[1],'lon']), lat = as.numeric(dllist[which(match(dllist$Name,get_analytics()$Table[input$node_select_rows_selected,]$Name) ==1)[1],'lat']),
+         label = get_analytics()$Table[input$node_select_rows_selected,]$Name,
+         icon = iconSet[1]  ) %>% setView(lng = as.numeric(dllist[which(match(dllist$Name,get_analytics()$Table[input$node_select_rows_selected,]$Name) ==1)[1],'lon']), lat = as.numeric(dllist[which(match(dllist$Name,get_analytics()$Table[input$node_select_rows_selected,]$Name) ==1)[1],'lat']), zoom = 6)  
      
      }
       else{
@@ -160,19 +166,22 @@ server <- function(input, output,session) {
     }
   }) 
   
+  get_analytics = reactiveVal({
+    0
+  })
   
-  output$day_i = renderValueBox({valueBox(updatefilter()[input$ex_rows_selected,1],'Date',
+  output$day_i = renderValueBox({valueBox(get_analytics()$Date,
                                           "Date", icon = icon("question"),
                                           color = "light-blue") })
   
-  output$uag_v = renderValueBox({valueBox(paste0(round(updatefilter()[input$ex_rows_selected,2]/1000000,2),' GWh'),
+  output$uag_v = renderValueBox({valueBox(paste0(get_analytics()$UAG,' GWh'),
                                           "UAG", icon = icon("question"),
                                           color = "light-blue") })
   
 output$excess_u = renderValueBox({
 
   
-  valueBox(paste0(round(abs(20-abs(round(updatefilter()[input$ex_rows_selected,2]/1000000,2))),2),' GWh')
+  valueBox(paste0(get_analytics()$ExcessUAG,' GWh')
            
            ,
                                            "Excess", icon = icon("question"),
@@ -181,7 +190,13 @@ output$excess_u = renderValueBox({
   })
 
   
-  
+  observeEvent(input$analysis_date,{
+    if(input$analysis_date > end(getexit()) | input$analysis_date > end(getentry()) | input$analysis_date < start(getexit()) | input$analysis_date < start(getentry()))
+    {
+      shinyalert('Warning!', 'Selected date is outside of flow database range. Try updating the local DB, or uploading your own data!', type = 'warning')
+      updateDateInput(session, 'analysis_date', end(getentry()))
+    }
+  })
   
   output$ui.action <- renderUI({
     if (is.null(input$ex_rows_selected)) return()
@@ -190,11 +205,34 @@ output$excess_u = renderValueBox({
   gentab = observeEvent(input$action,{
     focusday =  updatefilter()[input$ex_rows_selected,1]
     
+    focusday2[['Date']] <<-  updatefilter()[input$ex_rows_selected,1]
+    focusday2[['UAG']] <<- round(updatefilter()[input$ex_rows_selected,2]/1e6,2)
+    focusday2[['ExcessUAG']] <<- round(abs(20-abs(round(updatefilter()[input$ex_rows_selected,2]/1000000,2))),2)
+      
+    
+    
     tv =  updatefilter()[input$ex_rows_selected,2]
+    analytics_holder[[as.name(format(updatefilter()[input$ex_rows_selected,1]))]]<<-focusday2
+    get_analytics(focusday2)
+   Recalc_Tbl()
+   get_analytics(analytics_holder[[length(analytics_holder)]])
+updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), selected = names(analytics_holder)[length(names(analytics_holder))])
    
     updateTabItems(session, 'container','day_2')
-    Recalc_Tbl()
     
+    
+  })
+  
+  observeEvent(input$past_analis,{
+    a=1
+    a=2
+    if(length(analytics_holder) != 0)
+    {
+    if(input$past_analis %in% names(analytics_holder))
+    {
+   get_analytics(analytics_holder[[input$past_analis]])
+    }
+    }
   })
   
   getfocusperiod = function(x, width=10){
@@ -306,7 +344,7 @@ output$excess_u = renderValueBox({
       }
       ##HANDLE NULL SELECT CASE##
       ffs = dllist
-      if(length(input$node_select_rows_selected)==0  | nrow(get_nodes())==0){
+      if(length(input$node_select_rows_selected)==0  | nrow(get_analytics()$Table)==0){
         par(mar = c(0,0,0,0))
         return( {plot(c(0, 1), c(0, 1), ann = F, bty = 'n', type = 'n', xaxt = 'n', yaxt = 'n')
           text(x = 0.5, y = 0.5, paste("Select a node to view detailed information."), 
@@ -335,9 +373,9 @@ output$excess_u = renderValueBox({
         
         ##DRAW GRAPHS WITH ADDITION
         
-        if(get_nodes()[input$node_select_rows_selected,]$Type == 'Demand'){
+        if(get_analytics()$Table[input$node_select_rows_selected,]$Type == 'Demand'){
           
-          l = (getexit()[,get_nodes()[input$node_select_rows_selected,]$Name])
+          l = (getexit()[,get_analytics()$Table[input$node_select_rows_selected,]$Name])
           l = l/1000000
           if(length(ffs)<length(l))
           {
@@ -349,14 +387,14 @@ output$excess_u = renderValueBox({
           return(dygraph(l, main = 'Time Series', ylab = 'Energy (GWh)')%>%
             dyAxis("y", label = "GWh Node", valueRange = c(min(l[,1]), max(l[,1])), independentTicks = TRUE)%>%
             dyAxis("y2", label = "GWh Group ", valueRange = c(min(l[,2]), max(l[,2])), independentTicks = TRUE) %>%
-            dySeries(typee, axis=('y2')) %>%dyRangeSelector(dateWindow = c(as.Date(updatefilter()[input$ex_rows_selected,1])-90, as.Date(updatefilter()[input$ex_rows_selected,1])+10)) 
-            %>%   dyShading(from = as.Date(updatefilter()[input$ex_rows_selected,1])-1, to = as.Date(updatefilter()[input$ex_rows_selected,1])+1, color = "#FFE6E6")
+            dySeries(typee, axis=('y2')) %>%dyRangeSelector(dateWindow = c(as.Date(get_analytics()$Date)-90, as.Date(get_analytics()$Date)+10)) 
+            %>%   dyShading(from = as.Date(get_analytics()$Date)-1, to = as.Date(get_analytics()$Date)+1, color = "#FFE6E6")
           )# grid()labelLoc = "bottom"
         }
-        if(get_nodes()[input$node_select_rows_selected,]$Type == 'Supplies'){
+        if(get_analytics()$Table[input$node_select_rows_selected,]$Type == 'Supplies'){
           
           
-          l = (getentry()[,get_nodes()[input$node_select_rows_selected,]$Name])
+          l = (getentry()[,get_analytics()$Table[input$node_select_rows_selected,]$Name])
           l = l/1000000
           l$ffs=ffs
           colnames(l)[2] = typee
@@ -364,8 +402,8 @@ output$excess_u = renderValueBox({
           return(dygraph(l, main = 'Time Series', ylab = 'Energy (GWh)')%>%
                    dyAxis("y", label = "GWh Node", valueRange = c(min(l[,1]), max(l[,1])), independentTicks = TRUE)%>%
                    dyAxis("y2", label = "GWh Group ", valueRange = c(min(l[,2]), max(l[,2])), independentTicks = TRUE) %>%
-                   dySeries(typee, axis=('y2')) %>% dyRangeSelector(dateWindow = c(as.Date(updatefilter()[input$ex_rows_selected,1])-90, as.Date(updatefilter()[input$ex_rows_selected,1])+10))
-                 %>%   dyShading(from = as.Date(updatefilter()[input$ex_rows_selected,1])-1, to = as.Date(updatefilter()[input$ex_rows_selected,1])+1, color = "#FFE6E6")
+                   dySeries(typee, axis=('y2')) %>% dyRangeSelector(dateWindow = c(as.Date(get_analytics()$Date)-90, as.Date(get_analytics()$Date)+10))
+                 %>%   dyShading(from = as.Date(get_analytics()$Date)-1, to = as.Date(get_analytics()$Date)+1, color = "#FFE6E6")
                  )# grid()labelLoc = "bottom"
         }
         
@@ -377,20 +415,20 @@ output$excess_u = renderValueBox({
       ##DRAW SINGLE GRAPH
       
       
-      if(get_nodes()[input$node_select_rows_selected,]$Type == 'Demand'){
+      if(get_analytics()$Table[input$node_select_rows_selected,]$Type == 'Demand'){
         
-        l = (getexit()[,get_nodes()[input$node_select_rows_selected,]$Name])
+        l = (getexit()[,get_analytics()$Table[input$node_select_rows_selected,]$Name])
         cat(file=stderr(),str(l))
-        return(dygraph(l/1000000, main = 'Time Series', ylab = 'Energy (GWh)')%>%dyRangeSelector(dateWindow = c(as.Date(updatefilter()[input$ex_rows_selected,1])-30, as.Date(updatefilter()[input$ex_rows_selected,1])+10))
-               %>% dyShading(from = as.Date(updatefilter()[input$ex_rows_selected,1])-1, to = as.Date(updatefilter()[input$ex_rows_selected,1])+1, color = "#FFE6E6")
+        return(dygraph(l/1000000, main = 'Time Series', ylab = 'Energy (GWh)')%>%dyRangeSelector(dateWindow = c(as.Date(get_analytics()$Date)-30, as.Date(get_analytics()$Date)+10))
+               %>% dyShading(from = as.Date(get_analytics()$Date)-1, to = as.Date(get_analytics()$Date)+1, color = "#FFE6E6")
                )
        
         
          # grid()labelLoc = "bottom"
       }
-      if(get_nodes()[input$node_select_rows_selected,]$Type == 'Supplies'){
-        return(dygraph((getentry()[,get_nodes()[input$node_select_rows_selected,]$Name])/1000000, main = 'Time Series')%>%dyRangeSelector(dateWindow = c(as.Date(updatefilter()[input$ex_rows_selected,1])-30, as.Date(updatefilter()[input$ex_rows_selected,1])+10))
-               %>%     dyShading(from = as.Date(updatefilter()[input$ex_rows_selected,1])-1, to = as.Date(updatefilter()[input$ex_rows_selected,1])+1, color = "#FFE6E6")
+      if(get_analytics()$Table[input$node_select_rows_selected,]$Type == 'Supplies'){
+        return(dygraph((getentry()[,get_analytics()$Table[input$node_select_rows_selected,]$Name])/1000000, main = 'Time Series')%>%dyRangeSelector(dateWindow = c(as.Date(get_analytics()$Date)-30, as.Date(get_analytics()$Date)+10))
+               %>%     dyShading(from = as.Date(get_analytics()$Date)-1, to = as.Date(get_analytics()$Date)+1, color = "#FFE6E6")
                )
       }
       
@@ -398,9 +436,12 @@ output$excess_u = renderValueBox({
     }
   )
   output$node_select = DT::renderDataTable({
-  print('Requsting FINT')
-    get_nodes_smp()
     
+  print('Requsting FINT')
+    #get_nodes_smp()
+    a=1
+    a=2
+    get_analytics()$Table
     
   },selection = list(mode ='single', selected = 1), filter = list(position = "bottom")) 
   
@@ -434,30 +475,30 @@ output$excess_u = renderValueBox({
     {
       selectCells(dp,1)
     }
-    if(length(input$node_select_rows_selected) ==0 | nrow(get_nodes())==0)
+    if(length(input$node_select_rows_selected) ==0 | nrow(get_analytics()$Table)==0)
     {
       return(data.frame(error='Error node_stats 1'))
     }
    
-    if(get_nodes()[input$node_select_rows_selected,]$Type == 'Supplies')
+    if(get_analytics()$Table[input$node_select_rows_selected,]$Type == 'Supplies')
     {
-      wkv=getentry()[,get_nodes()[input$node_select_rows_selected,]$Name]
-   tval = getentry()[getfocusday(),get_nodes()[input$node_select_rows_selected,]$Name]
+      wkv=getentry()[,get_analytics()$Table[input$node_select_rows_selected,]$Name]
+   tval = getentry()[get_analytics()$Date,get_analytics()$Table[input$node_select_rows_selected,]$Name]
       
       }
     else{
-      wkv=getexit()[,get_nodes()[input$node_select_rows_selected,]$Name]
-      tval = getexit()[getfocusday(),get_nodes()[input$node_select_rows_selected,]$Name]
+      wkv=getexit()[,get_analytics()$Table[input$node_select_rows_selected,]$Name]
+      tval = getexit()[get_analytics()$Date,get_analytics()$Table[input$node_select_rows_selected,]$Name]
     }
     percentage_online_total=round(sum(wkv>0)/ length(wkv),2)
     percentage_online_historic=round(sum(wkv[(length(wkv)-30):length(wkv)]>0)/ 30,2)
-    node_sd = sd(wkv[wkv>0])
-      node_nz_mean=mean(wkv[wkv!=0])
+    node_sd = sd(wkv[wkv>0])/1e6
+      node_nz_mean=mean(wkv[wkv!=0])/1e6
       node_type = 0
-      node_max=max(wkv)
-    node_pmax= tval/node_max
+      node_max=max(wkv)/1e6
+    node_pmax= (tval/1e6)/node_max
     valQ = ecdf(as.numeric(wkv[wkv>0]))(tval)
-    return(data.frame(Statistic = c('Total Online %', '30 Day Online %', 'Standard Deviation', 'Mean', 'Type','Max', '% Max', 'Quantile'),Values = c(round(percentage_online_total,2),round(percentage_online_historic,2), round(node_sd,2), round(node_nz_mean,2), node_type, node_max, round(node_pmax,2), round(valQ,2))))
+    return(data.frame(Statistic = c('Total Online %', '30 Day Online %', 'Standard Deviation (GWh)', 'Mean (GWh)', 'Type','Max (GWh)', '% Max', 'Quantile'),Values = c(round(percentage_online_total,2),round(percentage_online_historic,2), round(node_sd,2), round(node_nz_mean,2), node_type, round(node_max,2), round(node_pmax,2), round(valQ,2))))
   })
   
   
@@ -472,7 +513,7 @@ output$excess_u = renderValueBox({
     {
     selectCells(dp,1)
     }
-    if(length(input$node_select_rows_selected) ==0 | nrow(get_nodes())==0)
+    if(length(input$node_select_rows_selected) ==0 | nrow(get_analytics()$Table)==0)
     {
       return(data.frame())
     }
@@ -482,15 +523,15 @@ output$excess_u = renderValueBox({
   {
     return(data.frame())
   }
-    if(get_nodes()[input$node_select_rows_selected,]$Type == 'Supplies')
+    if(get_analytics()$Table[input$node_select_rows_selected,]$Type == 'Supplies')
     {
-      vals =round(getentry()[getfocusday() + c(-1,0,1),get_nodes()[input$node_select_rows_selected,]$Name]/1000000,2)
+      vals =round(getentry()[get_analytics()$Date + c(-1,0,1),get_analytics()$Table[input$node_select_rows_selected,]$Name]/1000000,2)
     }
   else{
-    vals = round(getexit()[getfocusday() + c(-1,0,1),get_nodes()[input$node_select_rows_selected,]$Name]/1000000,2)
+    vals = round(getexit()[get_analytics()$Date + c(-1,0,1),get_analytics()$Table[input$node_select_rows_selected,]$Name]/1000000,2)
     }
-     f1= dllist %>% filter(Type == 'Supplies') %>% split(.$Stype) %>% map(~rowSums((getentry()/1000000)[getfocusday() + c(-1,0,1),.x$Name]))%>% as_tibble()
-    f2=dllist %>% filter(Type == 'Demand') %>% split(.$Stype) %>% map(~rowSums((getexit()/1000000)[getfocusday() + c(-1,0,1),.x$Name]))  %>% as_tibble()
+     f1= dllist %>% filter(Type == 'Supplies') %>% split(.$Stype) %>% map(~rowSums((getentry()/1000000)[get_analytics()$Date + c(-1,0,1),.x$Name]))%>% as_tibble()
+    f2=dllist %>% filter(Type == 'Demand') %>% split(.$Stype) %>% map(~rowSums((getexit()/1000000)[get_analytics()$Date + c(-1,0,1),.x$Name]))  %>% as_tibble()
    r = rbind(t((vals)),(t(cbind(f1,f2))))
   r = round(r,2)
     return(r)
@@ -503,7 +544,7 @@ output$excess_u = renderValueBox({
   
   vlm = observeEvent(input$node_select_rows_selected,{
     
-    #selectCells(sel_prox,which(row.names(r)==get_nodes()[input$node_select_rows_selected,]$Stype))
+    #selectCells(sel_prox,which(row.names(r)==get_analytics()$Table[input$node_select_rows_selected,]$Stype))
     
   }) 
 
@@ -664,7 +705,25 @@ output$excess_u = renderValueBox({
  })
 
   observeEvent(input$calculate_anom,{
+    
+    date = input$analysis_date
+    
+    focusday2[['Date']] <<-  date
+    focusday2[['UAG']] <<- round(getactive()[date,input$inp2]/1e6,2)
+    focusday2[['ExcessUAG']] <<- round(abs(20-abs(round(getactive()[date,input$inp2]/1000000,2))),2)
+    
+    
+  
+    analytics_holder[[as.name(format(date))]]<<-focusday2
+    
+    get_analytics(focusday2)
+  
+   
     Recalc_Tbl()
+    get_analytics(analytics_holder[[length(analytics_holder)]])
+    
+    updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), selected = names(analytics_holder)[length(names(analytics_holder))])
+    
     }
   )
   Recalc_Tbl = function(x){
@@ -707,7 +766,7 @@ output$excess_u = renderValueBox({
     
     
     width = 600
-    v = which(index(getentry()) == getfocusday() )
+    v = which(index(getentry()) == get_analytics()$Date )
     f_period_n  = seq(v - width, v + min(width, nrow(getentry()) -v), by = 1)
     f_period_x  = seq(v - width, v + min(width, nrow(getexit()) -v), by = 1)
     
@@ -726,7 +785,7 @@ output$excess_u = renderValueBox({
         incProgress(1/selection_size, message = paste("Calculating Interrupts"))
         e1 = sapply(ENT$Name, function(x){
           
-          tgs =getentry()[c(-1,0,1) +getfocusday(),x]
+          tgs =getentry()[c(-1,0,1) +get_analytics()$Date,x]
           if(as.numeric(tgs[1]) >0 & as.numeric(tgs[3]) > 0 & as.numeric(tgs[2]) ==0)
           {
             return(1)
@@ -738,7 +797,7 @@ output$excess_u = renderValueBox({
         })
         ENT_F$Interrupt = e1
         e2 = sapply(EXT$Name, function(x){
-          tgs =getexit()[c(-1,0,1) +getfocusday(),x]
+          tgs =getexit()[c(-1,0,1) +get_analytics()$Date,x]
           if(as.numeric(tgs[1]) >0 & as.numeric(tgs[3]) > 0 & as.numeric(tgs[2]) ==0)
           {
             return(1)
@@ -760,7 +819,7 @@ output$excess_u = renderValueBox({
          incProgress(s_step, message = paste("Calculating Anomalies(Fast)"))
           l=tsoutliers(getentry()[f_period_n,x])%>% xts(., order.by= index(getentry()[f_period_n,x]))
           if(sum(is.na(l)) >0){return(0)}
-          if(l[getfocusday(),]>0)
+          if(l[get_analytics()$Date,]>0)
           {
             return(1)
           }
@@ -775,7 +834,7 @@ output$excess_u = renderValueBox({
           incProgress(s_step, message = paste("Calculating Anomalies(Fast)"))
           l=tsoutliers(getexit()[f_period_n,x])%>% xts(., order.by= index(getexit()[f_period_n,x]))
           if(sum(is.na(l)) >0){return(0)}
-          if(l[getfocusday()]>0)
+          if(l[get_analytics()$Date]>0)
           {
             return(1)
           }
@@ -792,12 +851,12 @@ output$excess_u = renderValueBox({
         e1 = sapply(ENT$Name, function(x){
           
           tgs =getentry()[,x]
-          if(sum(tgs[tgs>0]) <1 | tgs[getfocusday()] ==0 )
+          if(sum(tgs[tgs>0]) <1 | tgs[get_analytics()$Date] ==0 )
           {
             return(0)
           }
-          valQ = ecdf(as.numeric(tgs[tgs>0]))(tgs[getfocusday()])
-          if(tgs[getfocusday()] != 0 & (valQ>0.95) )
+          valQ = ecdf(as.numeric(tgs[tgs>0]))(tgs[get_analytics()$Date])
+          if(tgs[get_analytics()$Date] != 0 & (valQ>0.95) )
           {
             return(1)
           }
@@ -810,12 +869,12 @@ output$excess_u = renderValueBox({
         e2 = sapply(EXT$Name, function(x){
           
           tgs =getexit()[,x]
-          if(sum(tgs[tgs>0]) <1 | tgs[getfocusday()])
+          if(sum(tgs[tgs>0]) <1 | tgs[get_analytics()$Date])
           {
             return(0)
           }
-          valQ = ecdf(as.numeric(tgs[tgs>0]))(tgs[getfocusday()])
-          if(tgs[getfocusday()] != 0 & (valQ>0.95) )
+          valQ = ecdf(as.numeric(tgs[tgs>0]))(tgs[get_analytics()$Date])
+          if(tgs[get_analytics()$Date] != 0 & (valQ>0.95) )
           {
             return(1)
           }
@@ -832,12 +891,12 @@ output$excess_u = renderValueBox({
           e1 = sapply(ENT$Name, function(x){
             
             tgs =getentry()[,x]
-            if(sum(tgs[tgs>0]) <1 | tgs[getfocusday()] ==0 )
+            if(sum(tgs[tgs>0]) <1 | tgs[get_analytics()$Date] ==0 )
             {
               return(0)
             }
-            valQ = ecdf(as.numeric(tgs[tgs>0]))(tgs[getfocusday()])
-            if(tgs[getfocusday()] != 0 & (valQ <0.05 ) )
+            valQ = ecdf(as.numeric(tgs[tgs>0]))(tgs[get_analytics()$Date])
+            if(tgs[get_analytics()$Date] != 0 & (valQ <0.05 ) )
             {
               return(1)
             }
@@ -850,12 +909,12 @@ output$excess_u = renderValueBox({
           e2 = sapply(EXT$Name, function(x){
             
             tgs =getexit()[,x]
-            if(sum(tgs[tgs>0]) <1 | tgs[getfocusday()])
+            if(sum(tgs[tgs>0]) <1 | tgs[get_analytics()$Date])
             {
               return(0)
             }
-            valQ = ecdf(as.numeric(tgs[tgs>0]))(tgs[getfocusday()])
-            if(tgs[getfocusday()] != 0 & (valQ <0.05 ) )
+            valQ = ecdf(as.numeric(tgs[tgs>0]))(tgs[get_analytics()$Date])
+            if(tgs[get_analytics()$Date] != 0 & (valQ <0.05 ) )
             {
               return(1)
             }
@@ -870,7 +929,7 @@ output$excess_u = renderValueBox({
         e1 = sapply(ENT$Name, function(x){
           
           tgs =getentry()[,x]
-          if(max(tgs) == tgs[getfocusday()])
+          if(max(tgs) == tgs[get_analytics()$Date])
           {
             return(1)
           }
@@ -882,7 +941,7 @@ output$excess_u = renderValueBox({
         ENT_F$Extreme = e1
         e2 = sapply(EXT$Name, function(x){
           tgs =getexit()[,x]
-          if(max(tgs) == tgs[getfocusday()])
+          if(max(tgs) == tgs[get_analytics()$Date])
           {
             return(1)
           }
@@ -905,7 +964,7 @@ output$excess_u = renderValueBox({
           colnames(t_bl)[1] = 'date'
           t_bl = as_tbl_time(t_bl, date)
           anoms =t_bl %>% time_decompose(colnames(t_bl)[2], method = 'stl') %>% anomalize(remainder, method = 'iqr') 
-          anomx = xts(anoms, order.by = anoms$date)[getfocusday()]
+          anomx = xts(anoms, order.by = anoms$date)[get_analytics()$Date]
           if(anomx$anomaly =='Yes')
           {
             return(1)
@@ -923,7 +982,7 @@ output$excess_u = renderValueBox({
           colnames(t_bl)[1] = 'date'
           t_bl = as_tbl_time(t_bl, date)
           anoms =t_bl %>% time_decompose(colnames(t_bl)[2], method = 'stl') %>% anomalize(remainder, method = 'iqr') 
-          anomx = xts(anoms, order.by = anoms$date)[getfocusday()]
+          anomx = xts(anoms, order.by = anoms$date)[get_analytics()$Date]
           if(anomx$anomaly =='Yes')
           {
             return(1)
@@ -955,9 +1014,9 @@ output$excess_u = renderValueBox({
     
     e1 = sapply(ENT$Name, function(x){
       
-      tgs =getentry()[c(1,-1) + getfocusday(),x]
+      tgs =getentry()[c(1,-1) + get_analytics()$Date,x]
       nval = as.numeric(mean(tgs))
-      val =getentry()[ getfocusday(),x]
+      val =getentry()[ get_analytics()$Date,x]
       ug = updatefilter()[input$ex_rows_selected,2]
       ug = ug + (nval-val)
       return(ug)
@@ -966,9 +1025,9 @@ output$excess_u = renderValueBox({
     
     e2 = sapply(EXT$Name, function(x){
       
-      tgs =getexit()[c(1,-1) + getfocusday(),x]
+      tgs =getexit()[c(1,-1) + get_analytics()$Date,x]
       nval = as.numeric(mean(tgs))
-      val =getexit()[ getfocusday(),x]
+      val =getexit()[ get_analytics()$Date,x]
       ug = updatefilter()[input$ex_rows_selected,2]
       ug = ug - (nval-val)
       return(ug)
@@ -978,14 +1037,14 @@ output$excess_u = renderValueBox({
     
     e1 = sapply(ENT$Name, function(x){
       
-      tgs =getentry()[getfocusday(),x]
+      tgs =getentry()[get_analytics()$Date,x]
       return(as.numeric(tgs))
       
     })
     
     e2 = sapply(EXT$Name, function(x){
       
-      tgs =getexit()[getfocusday(),x]
+      tgs =getexit()[get_analytics()$Date,x]
       return(as.numeric(tgs))
       
     })
@@ -1003,8 +1062,11 @@ output$excess_u = renderValueBox({
     FIN_Tl$`Rec. UAG (GWh)` = round(UAG_R/1e6,2)
     FIN_Tl = FIN_Tl %>% arrange(desc(Flags),desc(`Rec. UAG (GWh)`))
     FIN_T <<- FIN_Tl
+  updateMaterialSwitch(session,'show_d_hack', TRUE)
+  analytics_holder[[as.name(format(get_analytics()$Date))]]$Table <<- FIN_T
+
   }
-  
+
   observeEvent(input$button_DL, {
     
     updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], end = input$dateRange_reporting[2])
@@ -1161,6 +1223,7 @@ output$excess_u = renderValueBox({
     ga = getactive()[selected,input$inp2]
     pp = as.numeric(getactive()[selected,input$inp2])
     
+    
    # rmean = rollmean(getactive()[,input$inp2], 7 )
     uppers =rep(200000000, length = length(pp))
     lowers =rep(-200000000, length = length(pp))
@@ -1264,7 +1327,7 @@ output$excess_u = renderValueBox({
    
     
   })
-  output$ex = DT::renderDataTable(updatefilter()[,-5], selection=  list(mode='single', selected =c(1)))
+  output$ex = DT::renderDataTable(updatefilter()[,-5], selection=  list(mode='single', selected =c(1)),options = list(scrollX = TRUE))
   dp = dataTableProxy('ex')
   sel_prox = dataTableProxy('secondary_sel')
   #print(outputOptions(output))
@@ -1322,29 +1385,29 @@ output$excess_u = renderValueBox({
       selectPage(dp, ceil(r/10))
     
   })
-  
-  output$uag = renderPlot({
-    dat = u_data2()
-    YLS = c(max(c(dat[,2], dat[,3]))*1.1, min(c(dat[,2], dat[,4]))*1.1)
-    #cat(file=stderr(),paste(input$inp2, input$dateRange[2],input$dateRange[1]))
-    #ga = getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2]
-    # pp = as.numeric(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2])
-    plot(y=dat[,2],x=as.Date(dat[,1]), type = input$type, main = input$inp2, xlab = 'Date', ylab = 'Energy', ylim = rev(YLS))
-    # axis.Date(1, at = seq(from =input$dateRange[1],to=input$dateRange[2], by="weeks"))
-    lines(as.Date(dat[,1]),dat[,5], col = 2, lty = 2)
-    # axis.Date(1, at=seq(input$dateRange[1],input$dateRange[2], by="1 mon"), format="%B-%Y",xlab = FALSE)
-    grid()
-    s = input$ex_rows_selected
-    pos = which(index(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2]) == updatefilter()[s,1])
-    if (length(s)) points(updatefilter()[s,1],updatefilter()[s,2], pch = 19, cex = 2, col = 2)
-    abline(h= 0, col = 3)
-    lines(as.Date(dat[,1]),dat[,3])
-    lines(as.Date(dat[,1]),dat[,4])
-    
-  }
-  
-  )
-  outputOptions(output, 'uag',suspendWhenHidden = F)
+  # 
+  # output$uag = renderPlot({
+  #   dat = u_data2()
+  #   YLS = c(max(c(dat[,2], dat[,3]))*1.1, min(c(dat[,2], dat[,4]))*1.1)
+  #   #cat(file=stderr(),paste(input$inp2, input$dateRange[2],input$dateRange[1]))
+  #   #ga = getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2]
+  #   # pp = as.numeric(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2])
+  #   plot(y=dat[,2],x=as.Date(dat[,1]), type = input$type, main = input$inp2, xlab = 'Date', ylab = 'Energy', ylim = rev(YLS))
+  #   # axis.Date(1, at = seq(from =input$dateRange[1],to=input$dateRange[2], by="weeks"))
+  #   lines(as.Date(dat[,1]),dat[,5], col = 2, lty = 2)
+  #   # axis.Date(1, at=seq(input$dateRange[1],input$dateRange[2], by="1 mon"), format="%B-%Y",xlab = FALSE)
+  #   grid()
+  #   s = input$ex_rows_selected
+  #   pos = which(index(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2]) == updatefilter()[s,1])
+  #   if (length(s)) points(updatefilter()[s,1],updatefilter()[s,2], pch = 19, cex = 2, col = 2)
+  #   abline(h= 0, col = 3)
+  #   lines(as.Date(dat[,1]),dat[,3])
+  #   lines(as.Date(dat[,1]),dat[,4])
+  #   
+  # }
+  # 
+  # )
+#  outputOptions(output, 'uag',suspendWhenHidden = F)
   
   
   

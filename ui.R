@@ -39,14 +39,17 @@ menuItem('Reporting', tabName = 'reporting', icon = icon('book')),
 menuItem('Help', tabName = 'about', icon =icon('question')),
 
 
-conditionalPanel(background = 'light-blue',"input.container === 'day_2'",hr(),div(style="text-align:center",class= "h3","Filters"),
+conditionalPanel(background = 'light-blue',"input.container === 'day_2'",hr(),div(style="text-align:center",class= "h3","Options"),
   materialSwitch(inputId = "atr_filter",value = FALSE,  label = "Display Overlay", 
                  status = "primary", right = TRUE)
 ,pickerInput(inputId = "flag_filter", label = 'Flags',
               
               choices = c("Interrupts","Anomalies (Fast)","All",'Quantile','Extreme','Anomalies (Slow)'), multiple = TRUE, 
-              selected = c("Interrupts",'Quantile','Extreme')), div(style="display:inline-block",actionBttn('calculate_anom','Calculate',block=TRUE, style = 'fill'),style="width: 80%; float:left")
-  )
+              selected = c("Interrupts",'Quantile','Extreme')),
+dateInput('analysis_date','Select Date',value = Sys.Date() -30)
+
+        ,div(style="display:inline-block",actionBttn('calculate_anom','Calculate',block=TRUE, style = 'fill'),style="width: 80%; float:left")
+  , br(),br(),hr(),  pickerInput(inputId = 'past_analis', label = 'Analysis List', choices=c('No Analysis')))
 ))
 
 #tags$head(tags$style(HTML(".small-box {height: 90px}"))),   solved bug 
@@ -66,13 +69,16 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
       id = "main_content",
       
       tabItems(
-        tabItem(tabName='day_2',fluidRow(valueBoxOutput('day_i'), valueBoxOutput('uag_v'), valueBoxOutput('excess_u')),fluidRow( box(width = 8,dygraphOutput('test12')%>%withSpinner()), box(width = 4, leafletOutput("map")%>%withSpinner()))
+        tabItem(tabName='day_2',hidden(div(
+          id = "main_content2", materialSwitch(inputId = "show_d_hack",value = FALSE,  label = "Display Overlay", 
+                                               status = "primary", right = TRUE))),conditionalPanel(condition = "!input.show_d_hack",fluidRow(align='center
+', h3('Please select date for analysis'))), conditionalPanel(condition= "input.show_d_hack",fluidRow(valueBoxOutput('day_i'), valueBoxOutput('uag_v'), valueBoxOutput('excess_u')),fluidRow( box(width = 8,dygraphOutput('test12')%>%withSpinner()), box(width = 4, leafletOutput("map")%>%withSpinner()))
                 ,
-                fluidRow(column(width = 6,box(title = 'Site Selection',status = 'primary', width = 12, DT::dataTableOutput('node_select')%>%withSpinner()) 
-                ), column(width = 6,
+                fluidRow(column(width = 8,box(title = 'Site Selection',status = 'primary', width = 12, DT::dataTableOutput('node_select')%>%withSpinner()) 
+                ), column(width = 4,
                 box(title = 'Site Statistics',status= 'primary', width = 12, DT::dataTableOutput('node_info')%>%withSpinner()),box(title = 'Grouped Sites',width = 12,status = 'info', DT::dataTableOutput('secondary_sel') %>% withSpinner())))
                 
-                ),
+                )),
         tabItem(tabName = 'reporting',
                 box(status='primary',title ='Reporting',width =12,column(width = 11,fluidRow(
                                                            dateRangeInput('dateRange_reporting',
