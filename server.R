@@ -166,6 +166,10 @@ server <- function(input, output,session) {
     }
   }) 
   
+  
+
+  
+  
   get_analytics = reactiveVal({
     0
   })
@@ -198,11 +202,12 @@ output$excess_u = renderValueBox({
     }
   })
   
-  output$ui.action <- renderUI({
-    if (is.null(input$ex_rows_selected)) return()
-    actionBttn("action", "Explore Day",block = TRUE, style = 'fill')
-  })
   gentab = observeEvent(input$action,{
+    if (is.null(input$ex_rows_selected)) {
+      
+      
+      shinyalert('Warning!','Please select a day!', type = 'warning')
+      return()}
     focusday =  updatefilter()[input$ex_rows_selected,1]
     
     focusday2[['Date']] <<-  updatefilter()[input$ex_rows_selected,1]
@@ -222,6 +227,9 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
     
     
   })
+  
+  
+
   
   observeEvent(input$past_analis,{
     a=1
@@ -260,76 +268,6 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
       return(FIN_T)
     }
   }
-  
-  # get_nodes = reactive({    focusday =  updatefilter()[input$ex_rows_selected,1]
-  # 
-  # tv =  updatefilter()[input$ex_rows_selected,2]
-  # v = which(index(getentry()) == focusday )
-  # dllist2 = dllist
-  # dllist2$flag = rep('', nrow(dllist2))
-  # dts= colnames(getentry())[daychanges(getentry(), v)]
-  # dtx= colnames(getexit())[daychanges(getexit(), v)]
-  # interrupts = c(dts,dtx)
-  # cat(file=stderr(),interrupts)
-  # dllist2$flag[match(interrupts , dllist2$Name)] = dllist2$flag[match(interrupts , dllist2$Name)] %s+%'Interrupt,'
-  # 
-  # 
-  # #anomaly# Only Run if anomaly flag is selected
-  # width = 600
-  # f_period_n  = seq(v - width, v + min(width, nrow(getentry()) -v), by = 1)
-  # f_period_x  = seq(v - width, v + min(width, nrow(getexit()) -v), by = 1)
-  # j =  getexit()[v,]>0
-  # j2 = getentry()[v,]>0
-  # l =apply(getexit()[f_period_x,], 2, function(x) {
-  #   if(sum(x)==0){return(0)}
-  #   t_bl= tk_tbl(x)
-  #   colnames(t_bl)[1] = 'date'
-  #   t_bl = as_tbl_time(t_bl, date)
-  #   anoms =t_bl %>% time_decompose(colnames(t_bl)[2], method = 'stl') %>% anomalize(remainder, method = 'iqr') 
-  #   anomx = xts(anoms, order.by = anoms$date)[getfocusday()]
-  #   lk=1
-  #   lk=2
-  #   
-  #  if(anomx$anomaly[1] == 'Yes'){return(1)}
-  #   else{
-  #     return(0)
-  #   }
-  #   
-  #   
-  #   }) 
-
- #  atx = colnames(getexit())[which(l==1)] ## NAMES OF ANOMALOUS NODES
- #  l =apply(getentry()[f_period_n,], 2, function(x) {(tsoutliers(x))}) %>% xts(., order.by= as.Date(rownames(.)))
- #  p = which(l[getfocusday(),]*j2>0, TRUE) %>%data.frame(.)
- #  ats = colnames(getentry())[p[,2]]
- #  anoms = c(atx, ats)
- #  dllist2$flag[match(anoms , dllist2$Name)] = dllist2$flag[match(anoms , dllist2$Name)] %s+%'Anomaly,'
- #  
- #  dllist2$flag =  substr(dllist2$flag , 1, nchar(dllist2$flag )-1)
- #  ss = '('
- #  if('Interrupts' %in% input$flag_filter) {ss = ss %s+% 'Interrupt|'}
- #  if('Anomalies' %in% input$flag_filter) {ss = ss %s+% 'Anomaly|'}
- #  ss =  substr(ss, 1, nchar(ss)-1)
- #  
- #  ss = paste(ss, ')', sep = '')
- #  attributable_error_ex  =  updatefilter()[input$ex_rows_selected,2]  -    apply(getexit()[f_period_x,], 2, function(x) { median(x[x>0])}) + as.numeric(getexit()[updatefilter()[input$ex_rows_selected,1],])
- #  attributable_error_en  =  updatefilter()[input$ex_rows_selected,2] + apply(getentry()[f_period_n], 2, function(x) { median(x[x>0])}) - as.numeric(getentry()[updatefilter()[input$ex_rows_selected,1],])
- #  p=1
- #  p2=1
- #  attr = c(attributable_error_en, attributable_error_ex)/1000000
- #  dllist2$atr = attr[match( dllist2$Name,names(attr))]
- #  if('All' %in% input$flag_filter){return(dllist2 %>%select(Name,Type,Stype,flag, atr) %>% filter(abs(atr)*input$atr_filter<25) )} #only a temp fix..
- # dr=  dllist2[grep(ss, dllist2$flag),] %>% select(Name,Type,Stype,flag, atr)
- # dr$atr = round(dr$atr,3)
- # colnames(dr)[5] = 'CorUAG'
- # if(input$atr_filter){return(dr %>% filter(abs(CorUAG)<25))}
- # dr
- #  })
- #  
-  
-  
-  
-  
   
   
   output$test12 = renderDygraph( 
@@ -601,35 +539,7 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
  last_update
   })
   
-  
-  output$dy2=renderDygraph({
-    d = getactive()[,input$inp2]
-    
-    
-    
-    e=  dygraph(d, main = input$inp2,ylab = 'Energy') %>%
-      dyRangeSelector(dateWindow = c(input$dateRange[1], input$dateRange[2])) 
-    
-    if("Bollinger Bands" %in% input$analchoice)
-    {
-      w = 30
-      ma = rollapply(d[,1], width = w, mean)
-      sds= rollapply(d[,1], width =w,sd)
-      d$pbb = ma+2*sds
-      d$mbb =  ma-2*sds
-      
-      e  =dygraph(d, main = input$inp2,ylab = 'Energy') %>%
-        dyRangeSelector(dateWindow = c(input$dateRange[1], input$dateRange[2])) %>% dySeries(c('mbb',names(d)[1],'pbb')) 
-      
-    }
-    if("20GWh" %in% input$analchoice)
-    {
-      e =e%>%dyLimit( 20000000, col = 'red') %>% dyLimit(-20000000, col = 'red')
-      
-    }
-    
-    
-  })
+ 
   output$dl_balance <- downloadHandler(
     #update primary range selector ue to poor design
     
@@ -1216,8 +1126,17 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
   
   
   
-  
+  ##########################UAG MONITOR LIMITS CALCS#####################
   u_data = reactive({
+    
+    if(length(input$analchoice) ==0)
+    {
+      updateMaterialSwitch(session, 'show_d_hack2',FALSE)
+    }
+    else{
+      updateMaterialSwitch(session, 'show_d_hack2',TRUE)
+    }
+    
     selected = seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day')
    
     ga = getactive()[selected,input$inp2]
@@ -1232,11 +1151,11 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
     w = 30
     ma = rollapply(as.numeric(getactive()[seq(from = input$dateRange[1]-w+1, to = input$dateRange[2], by = 'day'),input$inp2]), width = w, mean)
     sds= rollapply(as.numeric(getactive()[seq(from = input$dateRange[1]-w+1, to = input$dateRange[2], by = 'day'),input$inp2]), width =w,sd)
-    pbb = ma+2*sds
-    mbb =  ma-2*sds
+    pbb = ma+input$bol_sd*sds
+    mbb =  ma-input$bol_sd*sds
     
-    positive = rep(20000000, length = length(pp))
-    negative = rep(-20000000,length = length(pp))
+    positive = rep(input$gwh_lim*1e6, length = length(pp))
+    negative = rep(-input$gwh_lim*1e6,length = length(pp))
     if(is.null(input$analchoice))
     {
       uppers = cbind(uppers*0,uppers*0)
@@ -1247,7 +1166,7 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
       uppers = cbind(uppers, pbb)
       lowers = cbind(lowers, mbb)
     }
-    if("20GWh" %in% input$analchoice)
+    if("Fixed Limit" %in% input$analchoice)
     {
       uppers = cbind(uppers, positive)
       lowers = cbind(lowers, negative)
@@ -1332,50 +1251,79 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
   sel_prox = dataTableProxy('secondary_sel')
   #print(outputOptions(output))
 
-  
-  output$echartsu = renderEcharts4r({
-    lp = updatefilter()
+  an_observe_func = observe({
+    input$ex_rows_selected
     
-    dat = u_data2()
-    
-    if(nrow(dat) < 200)
-    {
-      th = 2
-    }
-    if(nrow(dat) > 200 & nrow(dat) < 900){
-      th=1
-    }
-    if(nrow(dat) >900){th=0.5}
-    
-    ds = which(dat[,1] %in% lp[,1])
-    dat$Anomalies = NA
-    dat$Anomalies[ds] = dat[ds,2]
-    YLS = c(max(c(dat[,2], dat[,3]))*1.1, min(c(dat[,2], dat[,4]))*1.1)/1e6
-    dat[,-1]= dat[,-1]/1e6
-    o= colnames(dat)
-    
-    
-    e_plot =dat%>% e_charts_(o[1],dispose = FALSE) %>% e_line_(o[2],symbol = 'none',lineStyle= list(width =list(th),color=list('rgb(0,0,0'))) %>% 
-      e_line_(o[3],symbol ='none', showSymbol = list('false'),hoverAnimation = list('false'),lineStyle= list(type =list('dotted'),color=list('rgb(100,100,100')))%>% 
-      e_line_(o[4],symbol ='none',lineStyle= list(type =list('dotted'),color=list('rgb(100,100,100'))) %>%
-      e_line(Anomalies, symbolSize = '6', connectNulls = FALSE) %>% e_y_axis(name='Energy (GWh)')
-    s = input$ex_rows_selected
-    if(length(s))
-    {
-      xAxis = updatefilter()[s,1]
-      yAxis = updatefilter()[s,2]/1e6
-      value = round(updatefilter()[s,2]/1e6,1)
-      l =list(xAxis =xAxis,yAxis = yAxis,value= value)
-      e_plot = e_plot %>% e_mark_point('Anomalies', data = l)
-    }
-    
-    
-  ##  dat%>% e_charts_(o[1]) %>% e_line_(o[2],symbol = 'none',lineStyle= list(type = list('dashed')))
-    
-    e_plot
+      #do stuff here
+     if(is.null(input$ex_rows_selected))
+     {
+       show_point(FALSE)
+     }
+      else{
+        show_point(TRUE)
+      }
     
   })
   
+  show_point = reactiveVal(TRUE)
+  
+  
+  output$echartsu = renderEcharts4r({
+    get_e_chart()
+  })
+  
+get_e_chart = reactive({
+  lp = updatefilter()
+  g=show_point()
+  dat = u_data2()
+  
+  if(nrow(dat) < 200)
+  {
+    th = 2
+  }
+  if(nrow(dat) > 200 & nrow(dat) < 900){
+    th=1
+  }
+  if(nrow(dat) >900){th=0.5}
+  
+  ds = which(dat[,1] %in% lp[,1])
+  dat$Anomalies = NA
+  dat$Anomalies[ds] = dat[ds,2]
+  #YLS = c(max(c(dat[,2], dat[,3]))*1.1, min(c(dat[,2], dat[,4]))*1.1)/1e6
+  dat[,-1]= dat[,-1]/1e6
+  o= colnames(dat)
+  
+  
+  
+  if(!g)
+  {
+    return(dat%>% e_charts_(o[1],dispose = TRUE) %>%
+             e_line(Anomalies, symbolSize = '8', symbol = 'circle', connectNulls = FALSE) %>%
+             e_line_(o[2],symbol = 'none',lineStyle= list(width =list(th),color=list('rgb(0,0,0'))) %>% 
+             e_line_(o[3],symbol ='none', showSymbol = list('false'),hoverAnimation = list('false'),lineStyle= list(type =list('dotted'),color=list('rgb(100,100,100')))%>% 
+             e_line_(o[4],symbol ='none',lineStyle= list(type =list('dotted'),color=list('rgb(100,100,100'))) %>%
+             e_y_axis(name='Energy (GWh)'))
+  }
+  e_plot =dat%>% e_charts_(o[1],dispose = FALSE) %>%
+    e_line(Anomalies, symbolSize = '8', connectNulls = FALSE) %>%
+    e_line_(o[2],symbol = 'none',lineStyle= list(width =list(th),color=list('rgb(0,0,0'))) %>% 
+    e_line_(o[3],symbol ='none', showSymbol = list('false'),hoverAnimation = list('false'),lineStyle= list(type =list('dotted'),color=list('rgb(100,100,100')))%>% 
+    e_line_(o[4],symbol ='none',lineStyle= list(type =list('dotted'),color=list('rgb(100,100,100'))) %>%
+    e_y_axis(name='Energy (GWh)')
+  
+  
+  s = input$ex_rows_selected
+    xAxis = updatefilter()[s,1]
+    yAxis = updatefilter()[s,2]/1e6
+    value = round(updatefilter()[s,2]/1e6,1)
+    l =list(xAxis =xAxis,yAxis = yAxis,value= value)
+    e_plot = e_plot %>% e_mark_point('Anomalies', data = l)
+
+  ##  dat%>% e_charts_(o[1]) %>% e_line_(o[2],symbol = 'none',lineStyle= list(type = list('dashed')))
+  
+  e_plot
+  
+})
   observeEvent(input$echartsu_clicked_data,{
     a=1
     a=2

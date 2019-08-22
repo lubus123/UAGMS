@@ -37,19 +37,24 @@ sidebar <- dashboardSidebar(sidebarMenu(id = 'container',
 menuItem('Reporting', tabName = 'reporting', icon = icon('book')),
   menuItem("Data Configuration", tabName = "data_config", icon = icon("file-excel-o")),
 menuItem('Help', tabName = 'about', icon =icon('question')),
-conditionalPanel("input.container === 'uag_monitor'",hr(),div(style="text-align:center",class= "h3","Options"),dateRangeInput('dateRange',label = 'Date range input: yyyy-mm-dd',start = Sys.Date() - 200, end = Sys.Date() -30
+conditionalPanel("input.container === 'uag_monitor'",hr(),div(style="text-align:center",class= "h3","Options"),div(style="text-align:center",class= "h5","Daily UAG"),dateRangeInput('dateRange',label = 'Date range input: yyyy-mm-dd',start = Sys.Date() - 200, end = Sys.Date() -30
 ), 
   pickerInput(inputId = "analchoice", 
               label = "Filtration", 
-              choices = c("Bollinger Bands","20GWh", "D'Arpino(2014)",'Anomalize','ETS Forecast'), multiple = TRUE, 
-              selected = "20GWh"),div(
-uiOutput('ui.action'),style="width: 87%; float:left")),
+              choices = c("Bollinger Bands","Fixed Limit", "D'Arpino(2014)",'Anomalize','ETS Forecast'), multiple = TRUE, 
+              selected = "Fixed Limit"), hidden(materialSwitch(inputId = "show_d_hack2",value = TRUE,  label = "Display Overlay", 
+                                                                status = "primary", right = TRUE)),
+
+conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Bollinger Bands')",sliderInput('bol_sd','Bollinger Band s.d.', min = 0.5,max=5,step = 0.25,value = 2) ),
+
+conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Fixed Limit') ", sliderInput('gwh_lim','Fixed Limit:' , min = 0.5, max = 50, step = 0.5, value = 20) ),
+div(
+actionBttn('action','Explore Day',style='fill',block = TRUE),style="width: 87%; float:left"), br(),br(),hr(), div(style="text-align:center",class= "h5","Aggregate UAG")),
 
 
 conditionalPanel(background = 'light-blue',"input.container === 'day_2'",hr(),div(style="text-align:center",class= "h3","Options"),
-  materialSwitch(inputId = "atr_filter",value = FALSE,  label = "Display Overlay", 
-                 status = "primary", right = TRUE)
-,pickerInput(inputId = "flag_filter", label = 'Flags',
+  #materialSwitch(inputId = "atr_filter",value = FALSE,  label = "Display Overlay", status = "primary", right = TRUE),
+pickerInput(inputId = "flag_filter", label = 'Flags',
               
               choices = c("Interrupts","Anomalies (Fast)","All",'Quantile','Extreme','Anomalies (Slow)'), multiple = TRUE, 
               selected = c("Interrupts",'Quantile','Extreme')),
