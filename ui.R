@@ -76,17 +76,35 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
       id = "main_content",
       
       tabItems(
-        tabItem(tabName='day_2',hidden(div(
+        tabItem(
+          ################################################### DAY ANALYSIS ######################################
+          
+          tabName='day_2',
+          
+          
+          
+          
+          hidden(div(
           id = "main_content2", materialSwitch(inputId = "show_d_hack",value = FALSE,  label = "Display Overlay", 
-                                               status = "primary", right = TRUE))),conditionalPanel(condition = "!input.show_d_hack",fluidRow(align='center
-', h3('Please select date for analysis'))), conditionalPanel(condition= "input.show_d_hack",fluidRow(valueBoxOutput('day_i'), valueBoxOutput('uag_v'), valueBoxOutput('excess_u')),fluidRow( box(width = 8,dygraphOutput('test12')%>%withSpinner()), box(width = 4, leafletOutput("map")%>%withSpinner()))
+            status = "primary", right = TRUE))),conditionalPanel(condition = "!input.show_d_hack",
+                      fluidRow(align='center',h3('Please select date for analysis'))), 
+          conditionalPanel(condition= "input.show_d_hack",fluidRow(valueBoxOutput('day_i'), valueBoxOutput('uag_v'), valueBoxOutput('excess_u'))
+         ,fluidRow( box(width = 8,dygraphOutput('test12')%>%withSpinner()), box(width = 4, leafletOutput("map")%>%withSpinner()))
+               
+          ,fluidRow(box(title = 'Site Selection',status = 'primary',width = 8,  DT::dataTableOutput('node_select')%>%withSpinner()) 
                 ,
-                fluidRow(column(width = 8,box(title = 'Site Selection',status = 'primary', width = 12, DT::dataTableOutput('node_select')%>%withSpinner()) 
-                ), column(width = 4,
-                box(title = 'Site Statistics',status= 'primary', width = 12, DT::dataTableOutput('node_info')%>%withSpinner()),box(title = 'Grouped Sites',width = 12,status = 'info', DT::dataTableOutput('secondary_sel') %>% withSpinner())))
+                box(title = 'Site Statistics',status= 'primary', width =4,  DT::dataTableOutput('node_info')%>%withSpinner()))
+                ,fluidRow(box(title = 'Grouped Sites',status = 'info', DT::dataTableOutput('secondary_sel') %>% withSpinner()))
                 
                 )),
+        
+        ################################################### REPORTING ######################################
+        
+        
         tabItem(tabName = 'reporting',
+                
+                
+                
                 box(status='primary',title ='Reporting',width =12,column(width = 11,fluidRow(
                                                            dateRangeInput('dateRange_reporting',
                                                                           label = 'Date range input: yyyy-mm-dd',
@@ -102,12 +120,22 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                 
                 
                 
-                ),tabItem(tabName = "about",fluidRow( box(status='primary',title ='Help',width =12,column(width = 11,height = 1000,htmlOutput('userguide'))),box(status='primary',title ='About',width =12,column(width = 11, 
+                ),
+        ################################################### ABOUT ######################################
+        
+        tabItem(tabName = "about",
+                
+                
+                
+                fluidRow( box(status='primary',title ='Help',width =12,column(width = 11,height = 1000,htmlOutput('userguide'))),box(status='primary',title ='About',width =12,column(width = 11, 
                                                                                                                                                                                                          fluidRow(
                                                                                                                                                                                                            align = "center",h1('UAGMS'),h4('Unnacounted for Gas Management Suite'),
                                                                                                                                                                                                            'Version .1 Alpha ',br(),'For Queries, contact lubomir.botev@manchester.ac.uk',
                                                                                                                                                                                                            br(), 'Analytics performed in  R (GPL-2 | GPL-3)', br(), 'Developed at the University of Manchester',br(),tags$img(src='mcrlogo.jpg',height='60',width='160'),br(),'2019')))
                 )),
+        
+        ################################################### UAG MONITOR ######################################
+        
         tabItem(tabName = "uag_monitor",
                 
                 fluidRow(valueBoxOutput("uag_prc"),valueBoxOutput("uag_num"),valueBoxOutput("uag_t")),
@@ -118,6 +146,8 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                  
                  
               ,
+     
+     ################################################### CHANGEPOINTS TAB ######################################
         tabItem(tabName = "cpt_tab",
                 
                 fluidRow(box(title = 'Bayesian changepoint analysis', plotOutput('bcp')%>%withSpinner()), box(title = 'Cumulative sum control chart', plotOutput('tso')%>%withSpinner()))
@@ -125,6 +155,9 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                 fluidRow(box(title = 'Changepoint Plot', (plotOutput('cpt_output')%>%withSpinner())),box(title = 'Summary', tableOutput('Locations'),textOutput('sumr'), selectInput('cpt_MODE','Changepoint Method:',c('PELT (Recommended)','Bin Seg (Allows control)')),sliderInput('control_cpt3', 'Binseg Max Changepoints', 1, 20, 5), sliderInput('control_cpt2', 'BCP p0', 0, 1, 0.2),sliderInput('control_cpt', 'CUSUM SD Shift', 0.3, 3, 1)))
                 
         ),
+     
+     
+     ################################################### DATA CONFIG ######################################
         tabItem(tabName = "data_config",
                 # fluidPage(
                 fluidRow(shinyjs::useShinyjs(),
