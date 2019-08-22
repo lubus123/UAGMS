@@ -21,9 +21,9 @@
 20,Didcot B Power Station,Demand,"NTS Energy Offtaken, Didcot, NTS Power Station",NTS Power Station,N,N/A,Orifice Plate,2,National Grid Gas GTO,N/A,A,N/A,51.6232426,-1.2676357
 21,Epping Green Power Station (Enfield),Demand,"NTS Energy Offtaken, EppingGreen, NTS Power Station",NTS Power Station,N,N/A,Turbine,2,Uniper (E.ON),N/A,A,N/A,51.6627778,-0.0227778
 22,Goole Glass (Guardian Industries) Industrial,Demand,"NTS Energy Offtaken, GooleGlass, Industrial Offtake",Industrial Offtake,N,N/A,Turbine,2,Guardian Industries,N/A,A,N/A,53.6982245,-0.9098698
-23,Gowkhall Power Station,Demand,"NTS Energy Offtaken, Gosberton, EM, LDZ Offtake",Sdemand,N,EM,Ultrasonic,2,National Grid Gas GTO,N/A,A,N/A,56.0503838,-3.685322
+23,Gowkhall Power Station,Demand,"NTS Energy Offtaken, Gosberton, EM, LDZ Offtake",Sdemand,N,EM,Ultrasonic,2,National Grid Gas GTO,N/A,A,N/A,56.077636,-3.519346
 24,Grain Power Station,Demand,"NTS Energy Offtaken, Grain, NTS Power Station",NTS Power Station,N,N/A,Turbine,2,Uniper (E.ON),N/A,A,N/A,51.4529756,0.7158219
-25,Great Yarmouth Power Station,Demand,"NTS Energy Offtaken, GtYarmouth, NTS Power Station",NTS Power Station,N,N/A,Orifice Plate,2,National Grid Gas GTO,N/A,A,N/A,52.5842115,1.7346744
+25,Great Yarmouth Power Station,Demand,"NTS Energy Offtaken, GtYarmouth, NTS Power Station",NTS Power Station,N,N/A,Orifice Plate,2,National Grid Gas GTO,N/A,A,N/A,52.856384,1.458039
 26,Hays Chemicals (Albion Inorganic Chemicals) industrial,Demand,"NTS Energy Offtaken, HaysChem, Industrial Offtake",Industrial Offtake,N,N/A,Orifice Plate,2,National Grid Gas GTO,N/A,A,N/A,53.1646527,-2.4061066
 27,ICI Billingham,Demand,"NTS Energy Offtaken, ICIBillnghm, Industrial Offtake",Industrial Offtake,N,N/A,Orifice Plate,1,National Grid Gas GTO,N/A,A,N/A,54.5934886,-1.2820574
 28,ICI Runcorn (Inovyn) Industrial,Demand,"NTS Energy Offtaken, ICIRuncorn, Industrial Offtake",Industrial Offtake,N,N/A,Orifice Plate,1,National Grid Gas GTO,N/A,A,N/A,53.3290201,-2.7583992
@@ -37,7 +37,7 @@
 36,Medway Power Station,Demand,"NTS Energy Offtaken, Medway, NTS Power Station",NTS Power Station,N,N/A,Ultrasonic,2,National Grid Gas GTO,N/A,A,N/A,51.439788,0.6909923
 37,Moffat,Demand,"NTS Energy Offtaken, Moffat, Interconnector",Interconnector,N,N/A,Ultrasonic,3,National Grid Gas GTO,N/A,A,N/A,55.162897,-3.261467
 38,Peterborough Power Station,Demand,"NTS Energy Offtaken, Peterboro, NTS Power Station",NTS Power Station,N,N/A,Orifice Plate,NK,National Grid Gas GTO,N/A,A,N/A,52.5769664,-0.2038821
-39,Peterhead Power Station,Demand,"NTS Energy Offtaken, Peterhead, NTS Power Station",NTS Power Station,N,N/A,Orifice Plate,3,SSE,N/A,A,N/A,57.4779214,-1.7883581
+39,Peterhead Power Station,Demand,"NTS Energy Offtaken, Peterhead, NTS Power Station",NTS Power Station,N,N/A,Orifice Plate,3,SSE,N/A,A,N/A,57.566238,-1.833835
 40,Phillips Teesside Power Station,Demand,"NTS Energy Offtaken, PhilipsTees, Industrial Offtake",Industrial Offtake,N,N/A,Turbine,2,ConocoPhillips Cogen,N/A,A,N/A,54.5755144,-1.1271851
 41,Rocksavage Power Station,Demand,"NTS Energy Offtaken, Rocksavage, NTS Power Station",NTS Power Station,N,N/A,Orifice Plate,2,National Grid Gas GTO,N/A,A,N/A,53.3154401,-2.7254151
 42,Rye House Power Station,Demand,"NTS Energy Offtaken, RyeHouse, NTS Power Station",NTS Power Station,N,N/A,Orifice Plate,2,National Grid Gas GTO,N/A,A,N/A,51.7616963,0.0090096
@@ -51,40 +51,40 @@
 50,Stallingborough 2 Power Station (South Humber Bank),Demand,"NTS Energy Offtaken, Stallingbor2, NTS Power Station",NTS Power Station,N,N/A,Orifice Plate,3,Centrica,N/A,A,N/A,53.6017532,-0.1451153
 51,Staythorpe Power Station,Demand,"NTS Energy Offtaken, Staythorpe, NTS Power Station",NTS Power Station,N,N/A,Turbine,2,RWE,N/A,A,N/A,53.0747925,-0.8558455
 52,Sutton Bridge Power Station,Demand,"NTS Energy Offtaken, SuttonBridge, NTS Power Station",NTS Power Station,N,N/A,Orifice Plate,2,Calon Energy,N/A,A,N/A,52.7568982,0.1935787
-53,Teesside PX Power Station,Demand,"NTS Energy Offtaken, Teesside NSMP, NTS Power Station",NTS Power Station,N,N/A,Orifice Plate,7,px limited,N/A,A,Ultrasonic,54.576838,1.120417
+53,Teesside PX Power Station,Demand,"NTS Energy Offtaken, Teesside NSMP, NTS Power Station",NTS Power Station,N,N/A,Orifice Plate,7,px limited,N/A,A,Ultrasonic,54.610528,-1.197422
 54,Thornton Curtis C Power Station,Demand,"NTS Energy Offtaken, ThorntonCurt, NTS Power Station",NTS Power Station,N,N/A,Ultrasonic,2,National Grid Gas GTO,N/A,A,N/A,53.6585299,-0.2542042
 55,West Burton Power Station,Demand,"NTS Energy Offtaken, WestBurtonPS, NTS Power Station",NTS Power Station,N,N/A,NK,NK,EDF Energy,N/A,A,N/A,53.3667555,-0.7970137
-56,Winnington Power Station,Demand,"NTS Energy Offtaken, Winnington, Industrial Offtake",Industrial Offtake,N,N/A,NK,NK,E.ON/Tata Chemicals,N/A,A,N/A,53.2694884,-2.5325513
+56,Winnington Power Station,Demand,"NTS Energy Offtaken, Winnington, Industrial Offtake",Industrial Offtake,N,N/A,NK,NK,E.ON/Tata Chemicals,N/A,A,N/A,53.29833,-2.437198
 58,Barking Power Station,Demand,"NTS Energy Offtaken, Barking, NTS Power Station",NTS Power Station,Y,N/A,Orifice Plate,1,#N/A,N/A,A,N/A,51.5211946,0.114162
-59,Enron Power Station,Demand,"NTS Energy Offtaken, Enron, NTS Power Station",NTS Power Station,Y,N/A,Ultrasonic,2,#N/A,N/A,A,N/A,0,0
+59,Enron Power Station,Demand,"NTS Energy Offtaken, Enron, NTS Power Station",NTS Power Station,Y,N/A,Ultrasonic,2,#N/A,N/A,A,N/A,54.610346,-1.196773
 61,Aldbrough Storage,Demand,"NTS Energy Offtaken, Aldbrough, Storage",Storage,N,N/A,Ultrasonic,2,SSE,N/A,A,N/A,53.8004668,-0.0817768
-62,Beltoft (Hatfield Moor) Storage (Lindholme Compressor Station),Demand,"NTS Energy Offtaken, Hatfield Moor, Storage",Storage,N,N/A,Ultrasonic,2,Scottish Power Generation,N/A,A,N/A,53.5536616,-0.9584761
-63,Hilltop Storage,Demand,"NTS Energy Offtaken, HillTop, Storage",Storage,N,N/A,Ultrasonic,1,EDF Energy,N/A,A,N/A,53.162048,-2.212666
+62,Beltoft (Hatfield Moor) Storage (Lindholme Compressor Station),Demand,"NTS Energy Offtaken, Hatfield Moor, Storage",Storage,N,N/A,Ultrasonic,2,Scottish Power Generation,N/A,A,N/A,53.548783,-0.765552
+63,Hilltop Storage,Demand,"NTS Energy Offtaken, HillTop, Storage",Storage,N,N/A,Ultrasonic,1,EDF Energy,N/A,A,N/A,53.1470349,-2.4463039
 64,Hole House Farm Storage,Demand,"NTS Energy Offtaken, HoleHousFm, Storage",Storage,N,N/A,Ultrasonic,1,EDF Energy,N/A,A,N/A,53.1470349,-2.4463039
-65,Holford Storage,Demand,"NTS Energy Offtaken, Holford, Storage",Storage,N,N/A,Ultrasonic,6,Holford Gas Storage Ltd (Uniper),N/A,A,N/A,51.0095354,-3.1290931
+65,Holford Storage,Demand,"NTS Energy Offtaken, Holford, Storage",Storage,N,N/A,Ultrasonic,6,Holford Gas Storage Ltd (Uniper),N/A,A,N/A,53.2262052,-2.4132166
 66,Hornsea Storage,Demand,"NTS Energy Offtaken, Hornsea, Storage",Storage,N,N/A,Ultrasonic,1,SSE Hornsea Ltd,N/A,A,N/A,53.921193,-0.168408
-67,Humbly Grove Storage,Demand,"NTS Energy Offtaken, HumblyGrov, Storage",Storage,N,N/A,Ultrasonic,2,Humbly Grove Energy,N/A,A,N/A,51.1938105,-1.0098267
-68,Rough Storage,Demand,"NTS Energy Offtaken, Rough, Storage",Storage,N,N/A,Orifice Plate,3,Centrica Storage,N/A,A,N/A,51.1938105,-1.0098267
+67,Humbly Grove Storage,Demand,"NTS Energy Offtaken, HumblyGrov, Storage",Storage,N,N/A,Ultrasonic,2,Humbly Grove Energy,N/A,A,N/A,51.182633,-1.363924
+68,Rough Storage,Demand,"NTS Energy Offtaken, Rough, Storage",Storage,N,N/A,Orifice Plate,3,Centrica Storage,N/A,A,N/A,54.61005,-1.196806
 69,Stublach Storage,Demand,"NTS Energy Offtaken, Stublach, Storage",Storage,N,N/A,Ultrasonic,2,Storengy,N/A,A,N/A,53.2293333,-2.4613056
 70,Avonmouth Storage,Demand,"NTS Energy Offtaken, Avonmouth, Storage",Storage,Y,N/A,Orifice Plate,NK,#N/A,N/A,A,N/A,51.512697,-2.6956859
 72,Glenmavis Storage,Demand,"NTS Energy Offtaken, Glenmavis, Storage",Storage,Y,N/A,Orifice Plate,2,#N/A,N/A,A,N/A,55.871167,-4.035496
 74,Aberdeen Offtake,Demand,"NTS Energy Offtaken, Aberdeen, SC, LDZ Offtake",NTS Offtake,N,Scot,Orifice Plate,1,SGN,N/A,A,N/A,57.135671,-2.378702
 75,Armadale Offtake,Demand,"NTS Energy Offtaken, Armadale, SC, LDZ Offtake",NTS Offtake,N,Scot,Orifice Plate,1,SGN,N/A,A,N/A,55.897642,-3.7040786
 76,Balgray Offtake,Demand,"NTS Energy Offtaken, Balgray, SC, LDZ Offtake",NTS Offtake,N,Scot,Orifice Plate,1,SGN,N/A,A,N/A,55.1649364,-3.3472909
-77,Bathgate Offtake,Demand,"NTS Energy Offtaken, Bathgate, SC, LDZ Offtake",NTS Offtake,N,Scot,Ultrasonic,2,SGN,N/A,A,N/A,55.492358,-3.45578
-78,Broxburn Offtake,Demand,"NTS Energy Offtaken, Broxburn, SC, LDZ Offtake",NTS Offtake,N,Scot,Orifice Plate,1,SGN,N/A,A,N/A,55.934161,-3.467681
+77,Bathgate Offtake,Demand,"NTS Energy Offtaken, Bathgate, SC, LDZ Offtake",NTS Offtake,N,Scot,Ultrasonic,2,SGN,N/A,A,N/A,55.915488,-3.45578
+78,Broxburn Offtake,Demand,"NTS Energy Offtaken, Broxburn, SC, LDZ Offtake",NTS Offtake,N,Scot,Orifice Plate,1,SGN,N/A,A,N/A,55.934161,-3.744267
 79,Burnhervie Offtake,Demand,"NTS Energy Offtaken, Burnhervie, SC, LDZ Offtake",NTS Offtake,N,Scot,Ultrasonic,2,SGN,N/A,A,N/A,57.263332,-2.4483651
 80,Careston Offtake,Demand,"NTS Energy Offtaken, Careston, SC, LDZ Offtake",NTS Offtake,N,Scot,Turbine,1,SGN,N/A,A,N/A,56.728917,-2.765806
-81,Drum Offtake,Demand,"NTS Energy Offtaken, Drum, SC, LDZ Offtake",NTS Offtake,N,Scot,Orifice Plate,1,SGN,N/A,A,N/A,56.093532,-3.302433
+81,Drum Offtake,Demand,"NTS Energy Offtaken, Drum, SC, LDZ Offtake",NTS Offtake,N,Scot,Orifice Plate,1,SGN,N/A,A,N/A,56.167924,-3.50673
 82,Glenmavis Offtake,Demand,"NTS Energy Offtaken, Glenmavis, SC, LDZ Offtake",NTS Offtake,N,Scot,Orifice Plate,2,SGN,N/A,A,N/A,55.886356,-3.996026
 83,Hume Offtake,Demand,"NTS Energy Offtaken, Hume, SC, LDZ Offtake",NTS Offtake,N,Scot,Turbine,2,SGN,N/A,A,N/A,55.665476,-2.4668066
-84,Kinknockie Offtake,Demand,"NTS Energy Offtaken, Kinknockie, SC, LDZ Offtake",NTS Offtake,N,Scot,Turbine,2,SGN,N/A,A,N/A,57.280359,-1.583916
+84,Kinknockie Offtake,Demand,"NTS Energy Offtaken, Kinknockie, SC, LDZ Offtake",NTS Offtake,N,Scot,Turbine,2,SGN,N/A,A,N/A,57.467419,-1.977764
 85,Langholm Offtake,Demand,"NTS Energy Offtaken, Langholm, SC, LDZ Offtake",NTS Offtake,N,Scot,Turbine,1,SGN,N/A,A,N/A,55.072688,-3.07027
 86,Lockerbie Offtake,Demand,"NTS Energy Offtaken, Lockerbie, SC, LDZ Offtake",NTS Offtake,N,Scot,Orifice Plate,1,SGN,N/A,A,N/A,55.115812,-3.173813
 87,Nether Howcleugh Offtake,Demand,"NTS Energy Offtaken, NetherHwclgh, SC, LDZ Offtake",NTS Offtake,N,Scot,Turbine,2,SGN,N/A,A,N/A,55.262206,-3.395186
 88,Pitcairn Offtake,Demand,"NTS Energy Offtaken, Pitcairn, SC, LDZ Offtake",NTS Offtake,N,Scot,Turbine,2,SGN,N/A,A,N/A,56.260989,-3.310179
 89,Soutra Offtake,Demand,"NTS Energy Offtaken, Soutra, SC, LDZ Offtake",NTS Offtake,N,Scot,Orifice Plate,1,SGN,N/A,A,N/A,55.8158503,-2.8752128
-90,St Fergus Offtake,Demand,"NTS Energy Offtaken, StFergus, SC, LDZ Offtake",NTS Offtake,N,Scot,Orifice Plate,8,SGN,N/A,A,N/A,57.352091,-1.554966
+90,St Fergus Offtake,Demand,"NTS Energy Offtaken, StFergus, SC, LDZ Offtake",NTS Offtake,N,Scot,Orifice Plate,8,SGN,N/A,A,N/A,57.569073,-1.838438
 91,Audley NW Offtake,Demand,"NTS Energy Offtaken, Audley, NW, LDZ Offtake",NTS Offtake,N,NW,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.310127,-1.404802
 92,Blackrod Offtake,Demand,"NTS Energy Offtaken, Blackrod, NW, LDZ Offtake",NTS Offtake,N,NW,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,53.5873599,-2.57864
 93,Eccleston Offtake,Demand,"NTS Energy Offtaken, Eccleston, NW, LDZ Offtake",NTS Offtake,N,NW,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,53.646615,-2.725534
@@ -92,9 +92,9 @@
 95,Lupton Offtake,Demand,"NTS Energy Offtaken, Lupton, NW, LDZ Offtake",NTS Offtake,N,NW,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,54.225241,-2.68633
 96,Malpas Offtake,Demand,"NTS Energy Offtaken, Malpas, NW, LDZ Offtake",NTS Offtake,N,NW,Turbine,NK,Cadent Gas,N/A,A,N/A,53.019049,-2.7673359
 97,Mickle Trafford Offtake,Demand,"NTS Energy Offtaken, MickleTrafd, NW, LDZ Offtake",NTS Offtake,N,NW,Orifice Plate,1,Cadent Gas,N/A,A,N/A,53.132538,-2.491726
-98,Partington Offtake,Demand,"NTS Energy Offtaken, Partington, NW, LDZ Offtake",NTS Offtake,N,NW,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,53.252067,2.243746
+98,Partington Offtake,Demand,"NTS Energy Offtaken, Partington, NW, LDZ Offtake",NTS Offtake,N,NW,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,53.421777,-2.411559
 99,Samlesbury Offtake,Demand,"NTS Energy Offtaken, Samlesbury, NW, LDZ Offtake",NTS Offtake,N,NW,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,53.7643642,-2.6067158
-100,Warburton Offtake,Demand,"NTS Energy Offtaken, Warburton, NW, LDZ Offtake",NTS Offtake,N,NW,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,53.252067,2.243746
+100,Warburton Offtake,Demand,"NTS Energy Offtaken, Warburton, NW, LDZ Offtake",NTS Offtake,N,NW,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,53.39253,-2.421767
 101,Weston Point Offtake,Demand,"NTS Energy Offtaken, WestonPoint, NW, LDZ Offtake",NTS Offtake,N,NW,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,53.185218,-2.430078
 102,Farningham Offtake,Demand,"NTS Energy Offtaken, Farningham, SE, LDZ Offtake",NTS Offtake,N,SE,Orifice Plate,1,SGN,N/A,A,N/A,51.380963,0.218655
 103,Farningham B Offtake,Demand,"NTS Energy Offtaken, FarninghamB, SE, LDZ Offtake",NTS Offtake,N,SE,Turbine,2,SGN,N/A,A,N/A,51.380963,0.218655
@@ -103,17 +103,17 @@
 106,Winkfield SE Offtake,Demand,"NTS Energy Offtaken, Winkfield, SE, LDZ Offtake",NTS Offtake,N,SE,NK,NK,SGN,N/A,A,N/A,51.4420486,-0.6975153
 107,Braishfield A Offtake,Demand,"NTS Energy Offtaken, BraishfieldA, SO, LDZ Offtake",NTS Offtake,N,S,Ultrasonic,2,SGN,N/A,A,N/A,51.0243624,-1.4666744
 108,Braishfield B Offtake,Demand,"NTS Energy Offtaken, BraishfieldB, SO, LDZ Offtake",NTS Offtake,N,S,Ultrasonic,2,SGN,N/A,A,N/A,51.0243624,-1.4666744
-109,Hardwick Offtake,Demand,"NTS Energy Offtaken, Hardwick, SO, LDZ Offtake",NTS Offtake,N,S,Orifice Plate,1,SGN,N/A,A,N/A,51.52103,0.503323
-110,Ipsden 1 Offtake,Demand,"NTS Energy Offtaken, Ipsden1, SO, LDZ Offtake",NTS Offtake,N,S,Orifice Plate,1,SGN,N/A,A,N/A,51.225098,0.155874
-111,Ipsden 2 Offtake,Demand,"NTS Energy Offtaken, Ipsden2, SO, LDZ Offtake",NTS Offtake,N,S,Orifice Plate,1,SGN,N/A,A,N/A,51.225098,0.155874
+109,Hardwick Offtake,Demand,"NTS Energy Offtaken, Hardwick, SO, LDZ Offtake",NTS Offtake,N,S,Orifice Plate,1,SGN,N/A,A,N/A,51.868938,-0.842931
+110,Ipsden 1 Offtake,Demand,"NTS Energy Offtaken, Ipsden1, SO, LDZ Offtake",NTS Offtake,N,S,Orifice Plate,1,SGN,N/A,A,N/A,51.564998,-1.102233
+111,Ipsden 2 Offtake,Demand,"NTS Energy Offtaken, Ipsden2, SO, LDZ Offtake",NTS Offtake,N,S,Orifice Plate,1,SGN,N/A,A,N/A,51.564998,-1.102234
 112,Mappowder Offtake,Demand,"NTS Energy Offtaken, Mappowder, SO, LDZ Offtake",NTS Offtake,N,S,Orifice Plate,1,SGN,N/A,A,N/A,50.853807,-2.374905
 113,Winkfield SO Offtake,Demand,"NTS Energy Offtaken, Winkfield, SO, LDZ Offtake",NTS Offtake,N,S,NK,NK,SGN,N/A,A,N/A,51.4420486,-0.6975153
-114,Alrewas WM Offtake,Demand,"NTS Energy Offtaken, Alrewas, WM, LDZ Offtake",NTS Offtake,N,WM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.4424231,-1.463344
-115,Aspley Offtake,Demand,"NTS Energy Offtaken, Aspley, WM, LDZ Offtake",NTS Offtake,N,WM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.595391,-0.314809
+114,Alrewas WM Offtake,Demand,"NTS Energy Offtaken, Alrewas, WM, LDZ Offtake",NTS Offtake,N,WM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.739902,-1.775305
+115,Aspley Offtake,Demand,"NTS Energy Offtaken, Aspley, WM, LDZ Offtake",NTS Offtake,N,WM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.89963,-2.270908
 116,Audley WM Offtake,Demand,"NTS Energy Offtaken, Audley, WM, LDZ Offtake",NTS Offtake,N,WM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,53.032857,-2.211826
 117,Austrey Offtake,Demand,"NTS Energy Offtaken, Austrey, WM, LDZ Offtake",NTS Offtake,N,WM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.38337,-1.344542
-118,Leamington Offtake,Demand,"NTS Energy Offtaken, Leamington, WM, LDZ Offtake",NTS Offtake,N,WM,Turbine,NK,Cadent Gas,N/A,A,N/A,52.163941,-1.290771
-119,Lower Quinton Offtake,Demand,"NTS Energy Offtaken, LowerQuinton, WM, LDZ Offtake",NTS Offtake,N,WM,Ultrasonic,NK,Cadent Gas,N/A,A,N/A,52.075377,-1.441452
+118,Leamington Offtake,Demand,"NTS Energy Offtaken, Leamington, WM, LDZ Offtake",NTS Offtake,N,WM,Turbine,NK,Cadent Gas,N/A,A,N/A,52.27759,-1.485483
+119,Lower Quinton Offtake,Demand,"NTS Energy Offtaken, LowerQuinton, WM, LDZ Offtake",NTS Offtake,N,WM,Ultrasonic,NK,Cadent Gas,N/A,A,N/A,52.13129,-1.737452
 120,Milwich Offtake,Demand,"NTS Energy Offtaken, Milwich, WM, LDZ Offtake",NTS Offtake,N,WM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.887651,-2.040756
 121,Ross WM Offtake,Demand,"NTS Energy Offtaken, Ross, WM, LDZ Offtake",NTS Offtake,N,WM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.394242,-2.394382
 122,Rugby Offtake,Demand,"NTS Energy Offtaken, Rugby, WM, LDZ Offtake",NTS Offtake,N,WM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.3785493,-1.3296647
@@ -125,37 +125,37 @@
 128,Caldecott Offtake,Demand,"NTS Energy Offtaken, Caldecott, EM, LDZ Offtake",NTS Offtake,N,EM,Orifice Plate,NK,Cadent Gas,N/A,A,Turbine,52.323535,-0.431256
 129,Drointon Offtake,Demand,"NTS Energy Offtaken, Drointon, EM, LDZ Offtake",NTS Offtake,N,EM,Ultrasonic,NK,Cadent Gas,N/A,A,N/A,54.173392,-1.518477
 130,Kirkstead Offtake,Demand,"NTS Energy Offtaken, Kirkstead, EM, LDZ Offtake",NTS Offtake,N,EM,Turbine,NK,Cadent Gas,N/A,A,N/A,53.142752,-0.24566
-131,Market Harborough Offtake,Demand,"NTS Energy Offtaken, MktHarborogh, EM, LDZ Offtake",NTS Offtake,N,EM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.295053,-0.560874
+131,Market Harborough Offtake,Demand,"NTS Energy Offtaken, MktHarborogh, EM, LDZ Offtake",NTS Offtake,N,EM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.497198,-0.935958
 132,Silk Willoughby Offtake,Demand,"NTS Energy Offtaken, SilkWillough, EM, LDZ Offtake",NTS Offtake,N,EM,Turbine,NK,Cadent Gas,N/A,A,N/A,52.584732,-0.231104
-133,Sutton Bridge Offtake,Demand,"NTS Energy Offtaken, SuttonBridge, EM, LDZ Offtake",NTS Offtake,N,EM,Turbine,NK,Cadent Gas,N/A,A,N/A,52.453691,0.093145
+133,Sutton Bridge Offtake,Demand,"NTS Energy Offtaken, SuttonBridge, EM, LDZ Offtake",NTS Offtake,N,EM,Turbine,NK,Cadent Gas,N/A,A,N/A,52.723855,0.161615
 134,Thornton Curtis Offtake,Demand,"NTS Energy Offtaken, ThorntonCurt, EM, LDZ Offtake",NTS Offtake,N,EM,Ultrasonic,2,Cadent Gas,N/A,A,N/A,53.423327,-0.170032
-135,Tur Langton Offtake,Demand,"NTS Energy Offtaken, TurLangton, EM, LDZ Offtake",NTS Offtake,N,EM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.331022,-0.565504
-136,Walesby Offtake,Demand,"NTS Energy Offtaken, Walesby, EM, LDZ Offtake",NTS Offtake,N,EM,Turbine,NK,Cadent Gas,N/A,A,N/A,53.23161,-0.982436
+135,Tur Langton Offtake,Demand,"NTS Energy Offtaken, TurLangton, EM, LDZ Offtake",NTS Offtake,N,EM,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.552399,-0.949034
+136,Walesby Offtake,Demand,"NTS Energy Offtaken, Walesby, EM, LDZ Offtake",NTS Offtake,N,EM,Turbine,NK,Cadent Gas,N/A,A,N/A,53.422089,-0.272027
 137,Bacton Offtake,Demand,"NTS Energy Offtaken, Bacton, EA, LDZ Offtake",NTS Offtake,N,EA,Turbine,NK,Cadent Gas,N/A,A,N/A,52.8492739,1.4645665
 138,Brisley Offtake,Demand,"NTS Energy Offtaken, Brisley, EA, LDZ Offtake",NTS Offtake,N,EA,Turbine,NK,Cadent Gas,N/A,A,N/A,52.7556122,0.8940802
 139,Great Wilbraham Offtake,Demand,"NTS Energy Offtaken, GtWilbraham, EA, LDZ Offtake",NTS Offtake,N,EA,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.110516,0.161349
-140,Matching Green Offtake,Demand,"NTS Energy Offtaken, MatchngGreen, EA, LDZ Offtake",NTS Offtake,N,EA,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.465937,0.131406
+140,Matching Green Offtake,Demand,"NTS Energy Offtaken, MatchngGreen, EA, LDZ Offtake",NTS Offtake,N,EA,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.78404,0.217567
 141,Peterborough Eye Offtake,Demand,"NTS Energy Offtaken, PeterborEye, EA, LDZ Offtake",NTS Offtake,N,EA,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.5694985,-0.2405299
 142,Roudham Heath Offtake,Demand,"NTS Energy Offtaken, RoudhamHeath, EA, LDZ Offtake",NTS Offtake,N,EA,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.444817,0.876276
 143,Royston Offtake,Demand,"NTS Energy Offtaken, Royston, EA, LDZ Offtake",NTS Offtake,N,EA,Turbine,NK,Cadent Gas,N/A,A,N/A,52.048142,-0.024066
-144,West Winch Offtake,Demand,"NTS Energy Offtaken, WestWinch, EA, LDZ Offtake",NTS Offtake,N,EA,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.424639,0.234976
-145,Whitwell Offtake,Demand,"NTS Energy Offtaken, Whitwell, EA, LDZ Offtake",NTS Offtake,N,EA,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.464919,1.024636
-146,Yelverton Offtake,Demand,"NTS Energy Offtaken, Yelverton, EA, LDZ Offtake",NTS Offtake,N,EA,NK,NK,Cadent Gas,N/A,A,N/A,50.493452,-4.085603
-147,Horndon Offtake,Demand,"NTS Energy Offtaken, Horndon, NT, LDZ Offtake",NTS Offtake,N,NL,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,50.222936,-3.59093
-148,Luxborough Lane Offtake,Demand,"NTS Energy Offtaken, LuxboroughLn, NT, LDZ Offtake",NTS Offtake,N,NL,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.131417,-3.467666
-149,Peters Green North Thames Offtake,Demand,"NTS Energy Offtaken, PetersGrn, NT, LDZ Offtake",NTS Offtake,N,NL,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.512371,-0.213757
-150,Peters Green South Mimms Offtake,Demand,"NTS Energy Offtaken, PetersGrn, SM, LDZ Offtake",NTS Offtake,N,NL,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.512371,-0.213757
-151,Winkfield NT Offtake,Demand,"NTS Energy Offtaken, Winkfield, NT, LDZ Offtake",NTS Offtake,N,NL,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.265643,-0.411901
+144,West Winch Offtake,Demand,"NTS Energy Offtaken, WestWinch, EA, LDZ Offtake",NTS Offtake,N,EA,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,52.71263,0.396787
+145,Whitwell Offtake,Demand,"NTS Energy Offtaken, Whitwell, EA, LDZ Offtake",NTS Offtake,N,EA,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.882226,-0.296221
+146,Yelverton Offtake,Demand,"NTS Energy Offtaken, Yelverton, EA, LDZ Offtake",NTS Offtake,N,EA,NK,NK,Cadent Gas,N/A,A,N/A,52.583397,1.380589
+147,Horndon Offtake,Demand,"NTS Energy Offtaken, Horndon, NT, LDZ Offtake",NTS Offtake,N,NL,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.529579,0.395678
+148,Luxborough Lane Offtake,Demand,"NTS Energy Offtaken, LuxboroughLn, NT, LDZ Offtake",NTS Offtake,N,NL,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.615611,0.062862
+149,Peters Green North Thames Offtake,Demand,"NTS Energy Offtaken, PetersGrn, NT, LDZ Offtake",NTS Offtake,N,NL,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.855955,-0.363414
+150,Peters Green South Mimms Offtake,Demand,"NTS Energy Offtaken, PetersGrn, SM, LDZ Offtake",NTS Offtake,N,NL,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.855955,-0.363414
+151,Winkfield NT Offtake,Demand,"NTS Energy Offtaken, Winkfield, NT, LDZ Offtake",NTS Offtake,N,NL,Orifice Plate,NK,Cadent Gas,N/A,A,N/A,51.449102,-0.688012
 152,Big Saltwick Offtake,Demand,"NTS Energy Offtaken, Saltwick, NO, LDZ Offtake",NTS Offtake,N,N,Orifice Plate,1,Northern Gas Networks,N/A,A,N/A,54.140965,-0.454353
 153,Bishop Auckland Offtake,Demand,"NTS Energy Offtaken, Auckland, NO, LDZ Offtake",NTS Offtake,N,N,Ultrasonic,2,Northern Gas Networks,N/A,A,N/A,54.401761,-1.335758
 154,Bishop Auckland Test Facility Offtake,Demand,"NTS Energy Offtaken, AucklandTF, NO, LDZ Offtake",NTS Offtake,N,N,Ultrasonic,2,Northern Gas Networks,N/A,A,N/A,54.401761,-1.335758
-155,Coldstream Offtake,Demand,"NTS Energy Offtaken, Coldstream, NO, LDZ Offtake",NTS Offtake,N,N,Orifice Plate,1,Northern Gas Networks,N/A,A,N/A,55.401618,-2.131351
+155,Coldstream Offtake,Demand,"NTS Energy Offtaken, Coldstream, NO, LDZ Offtake",NTS Offtake,N,N,Orifice Plate,1,Northern Gas Networks,N/A,A,N/A,55.655181,-2.214002
 156,Corbridge Offtake,Demand,"NTS Energy Offtaken, Corbridge, NO, LDZ Offtake",NTS Offtake,N,N,Ultrasonic,2,Northern Gas Networks,N/A,A,N/A,54.974046,-2.017505
 157,Cowpen Bewley Offtake,Demand,"NTS Energy Offtaken, CowpenBewley, NO, LDZ Offtake",NTS Offtake,N,N,Orifice Plate,1,Northern Gas Networks,N/A,A,N/A,54.355621,-1.153293
-158,Elton Offtake,Demand,"NTS Energy Offtaken, Elton, NO, LDZ Offtake",NTS Offtake,N,N,Ultrasonic,2,Northern Gas Networks,N/A,A,N/A,52.315699,-0.230323
+158,Elton Offtake,Demand,"NTS Energy Offtaken, Elton, NO, LDZ Offtake",NTS Offtake,N,N,Ultrasonic,2,Northern Gas Networks,N/A,A,N/A,53.282741,-2.794226
 159,Guyzance Offtake,Demand,"NTS Energy Offtaken, Guyzance, NO, LDZ Offtake",NTS Offtake,N,N,Turbine,2,Northern Gas Networks,N/A,A,N/A,55.330004,-1.67255
 160,Humbleton Offtake,Demand,"NTS Energy Offtaken, Humbleton, NO, LDZ Offtake",NTS Offtake,N,N,Turbine,1,Northern Gas Networks,N/A,A,N/A,53.793659,-0.138553
-161,Keld Offtake,Demand,"NTS Energy Offtaken, Keld, NO, LDZ Offtake",NTS Offtake,N,N,Turbine,1,Northern Gas Networks,N/A,A,N/A,54.40384,-2.163948
+161,Keld Offtake,Demand,"NTS Energy Offtaken, Keld, NO, LDZ Offtake",NTS Offtake,N,N,Turbine,1,Northern Gas Networks,N/A,A,N/A,54.518501,-2.6667
 162,Little Burdon Offtake,Demand,"NTS Energy Offtaken, LtBurdon, NE, LDZ Offtake",NTS Offtake,N,N,Ultrasonic,2,Northern Gas Networks,N/A,A,N/A,54.330451,-1.293909
 163,Little Saltwick Offtake,Demand,"NTS Energy Offtaken, SaltwickH, NO, LDZ Offtake",NTS Offtake,N,N,Orifice Plate,1,Northern Gas Networks,N/A,A,N/A,54.140965,-0.454353
 164,Melkinthorpe Offtake,Demand,"NTS Energy Offtaken, Melkinthorpe, NO, LDZ Offtake",NTS Offtake,N,N,Turbine,1,Northern Gas Networks,N/A,A,N/A,54.619968,-2.689562
@@ -164,7 +164,7 @@
 167,Wetheral Offtake,Demand,"NTS Energy Offtaken, Wetheral, NO, LDZ Offtake",NTS Offtake,N,N,Ultrasonic,2,Northern Gas Networks,N/A,A,N/A,54.881806,-2.833422
 168,Asselby Offtake,Demand,"NTS Energy Offtaken, Asselby, NE, LDZ Offtake",NTS Offtake,N,NE,Turbine,2,Northern Gas Networks,N/A,A,N/A,53.744733,-0.920741
 169,Baldersby Offtake,Demand,"NTS Energy Offtaken, Baldersby, NE, LDZ Offtake",NTS Offtake,N,NE,Turbine,2,Northern Gas Networks,N/A,A,N/A,54.205613,-1.452231
-170,Burley Bank Offtake,Demand,"NTS Energy Offtaken, BurleyBank, NE, LDZ Offtake",NTS Offtake,N,NE,Orifice Plate,1,Northern Gas Networks,N/A,A,N/A,52.324347,-1.103814
+170,Burley Bank Offtake,Demand,"NTS Energy Offtaken, BurleyBank, NE, LDZ Offtake",NTS Offtake,N,NE,Orifice Plate,1,Northern Gas Networks,N/A,A,N/A,54.004204,-1.601882
 171,Ganstead Offtake,Demand,"NTS Energy Offtaken, Ganstead, NE, LDZ Offtake",NTS Offtake,N,NE,Ultrasonic,2,Northern Gas Networks,N/A,A,N/A,53.793563,-0.255965
 172,Pannal Offtake,Demand,"NTS Energy Offtaken, Pannal, NE, LDZ Offtake",NTS Offtake,N,NE,Ultrasonic,2,Northern Gas Networks,N/A,A,N/A,53.956844,-1.529101
 173,Paull Offtake,Demand,"NTS Energy Offtaken, Paull, NE, LDZ Offtake",NTS Offtake,N,NE,Ultrasonic,2,Northern Gas Networks,N/A,A,N/A,53.7190697,-0.2307695
@@ -173,21 +173,21 @@
 176,Towton Offtake,Demand,"NTS Energy Offtaken, Towton, NE, LDZ Offtake",NTS Offtake,N,NE,Ultrasonic,2,Northern Gas Networks,N/A,A,N/A,53.8503468,-1.265239
 177,Maelor Offtake,Demand,"NTS Energy Offtaken, Maelor, WN, LDZ Offtake",NTS Offtake,N,WN,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,53.0470664,-3.0090968
 178,Dowlais Offtake,Demand,"NTS Energy Offtaken, Dowlais, WS, LDZ Offtake",NTS Offtake,N,WS,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,51.761811,-3.347789
-179,Dyffryn Clydach Offtake,Demand,"NTS Energy Offtaken, DyffrynClyd, WS, LDZ Offtake",NTS Offtake,N,WS,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,51.439704,-3.304778
+179,Dyffryn Clydach Offtake,Demand,"NTS Energy Offtaken, DyffrynClyd, WS, LDZ Offtake",NTS Offtake,N,WS,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,51.685121,-3.836251
 180,Gilwern Offtake,Demand,"NTS Energy Offtaken, Gilwern, WS, LDZ Offtake",NTS Offtake,N,WS,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,51.82351,-3.097385
 181,Aylesbeare Offtake,Demand,"NTS Energy Offtaken, Aylesbeare, SW, LDZ Offtake",NTS Offtake,N,SW,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,50.7174125,-3.3627941
 182,Choakford Offtake,Demand,"NTS Energy Offtaken, Choakford, SW, LDZ Offtake",NTS Offtake,N,SW,Turbine,2,Wales & West Utilities,N/A,A,N/A,50.375307,-3.989042
 183,Cirencester Offtake,Demand,"NTS Energy Offtaken, Cirencester, SW, LDZ Offtake",NTS Offtake,N,SW,Turbine,2,Wales & West Utilities,N/A,A,N/A,51.718495,-1.968243
 184,Coffinswell Offtake,Demand,"NTS Energy Offtaken, Coffinswell, SW, LDZ Offtake",NTS Offtake,N,SW,Turbine,2,Wales & West Utilities,N/A,A,N/A,50.506085,-3.565165
-185,Easton Grey Offtake,Demand,"NTS Energy Offtaken, EastonGrey, SW, LDZ Offtake",NTS Offtake,N,SW,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,51.352385,-2.090142
+185,Easton Grey Offtake,Demand,"NTS Energy Offtaken, EastonGrey, SW, LDZ Offtake",NTS Offtake,N,SW,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,51.589929,-2.150379
 186,Evesham Offtake,Demand,"NTS Energy Offtaken, Evesham, SW, LDZ Offtake",NTS Offtake,N,SW,Turbine,2,Wales & West Utilities,N/A,A,N/A,52.092149,-1.94677
-187,Fiddington Offtake,Demand,"NTS Energy Offtaken, Fiddington, SW, LDZ Offtake",NTS Offtake,N,SW,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,51.161581,-3.120176
-188,Ilchester Offtake,Demand,"NTS Energy Offtaken, Ilchester, SW, LDZ Offtake",NTS Offtake,N,SW,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,51.004774,-2.682366
-189,Kenn Offtake,Demand,"NTS Energy Offtaken, Kenn, SW, LDZ Offtake",NTS Offtake,N,SW,Turbine,2,Wales & West Utilities,N/A,A,N/A,51.294018,-2.25148
-190,Littleton Drew Offtake,Demand,"NTS Energy Offtaken, LittletnDrew, SW, LDZ Offtake",NTS Offtake,N,SW,Turbine,1,Wales & West Utilities,N/A,A,N/A,51.310006,-2.150882
+187,Fiddington Offtake,Demand,"NTS Energy Offtaken, Fiddington, SW, LDZ Offtake",NTS Offtake,N,SW,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,50.963722,-2.885852
+188,Ilchester Offtake,Demand,"NTS Energy Offtaken, Ilchester, SW, LDZ Offtake",NTS Offtake,N,SW,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,51.003499,-2.70163
+189,Kenn Offtake,Demand,"NTS Energy Offtaken, Kenn, SW, LDZ Offtake",NTS Offtake,N,SW,Turbine,2,Wales & West Utilities,N/A,A,N/A,50.667797,-3.524443
+190,Littleton Drew Offtake,Demand,"NTS Energy Offtaken, LittletnDrew, SW, LDZ Offtake",NTS Offtake,N,SW,Turbine,1,Wales & West Utilities,N/A,A,N/A,51.516521,-2.252539
 191,Pucklechurch Offtake,Demand,"NTS Energy Offtaken, Pucklechurch, SW, LDZ Offtake",NTS Offtake,N,SW,Turbine,2,Wales & West Utilities,N/A,A,N/A,51.486646,-2.436695
 192,Ross SW Offtake,Demand,"NTS Energy Offtaken, Ross, SW, LDZ Offtake",NTS Offtake,N,SW,Turbine,2,Wales & West Utilities,N/A,A,N/A,51.394242,-2.394382
-193,Seabank Offtake,Demand,"NTS Energy Offtaken, Seabank, SW, LDZ Offtake",NTS Offtake,N,SW,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,51.322693,-2.383566
+193,Seabank Offtake,Demand,"NTS Energy Offtaken, Seabank, SW, LDZ Offtake",NTS Offtake,N,SW,Ultrasonic,2,Wales & West Utilities,N/A,A,N/A,51.530626,-2.6538
 194,Bacton BBL,Supplies,"System Entry Energy, Bacton - BBL, M+15",Interconnector,N,N/A,Ultrasonic,2,BBL Company,"System Entry Energy, Bacton - BBL, D+2",D+2,N/A,52.512503,1.273496
 195,Bacton Interconnector (IUK),Supplies,"System Entry Energy, Bacton Interconnector, M+15",Interconnector,N,N/A,Ultrasonic,2,Interconnector (UK),"System Entry Energy, Bacton Interconnector, D+2",D+1,N/A,52.512503,1.273496
 196,Bacton Perenco (Amoco) Terminal,Supplies,"System Entry Energy, Bacton - Perenco, M+15",Subterminal,N,N/A,Orifice Plate,6,Perenco,"System Entry Energy, Bacton-Perenco, D+1",D+1,N/A,52.512503,1.273496
@@ -195,25 +195,25 @@
 198,Bacton Shell Terminal,Supplies,"System Entry Energy, Bacton - Shell, M+15",Subterminal,N,N/A,NK,NK,Shell,"System Entry Energy, Bacton-Shell, D+1",D+1,N/A,52.512503,1.273496
 199,Barrow Terminal,Supplies,"System Entry Energy, Barrow , M+15",Subterminal,N,N/A,Orifice Plate,3,Hydrocarbon Resources Limited (Centrica),"System Entry Energy, Barrow , D+2",D+2,N/A,54.05421,-3.103949
 200,Burton Point Terminal/Power Station,Supplies,"System Entry Energy, Burton Point, M+15",Subterminal,N,N/A,Orifice Plate,2,National Grid Gas GTO,"System Entry Energy, Burton Point, D+2",D+2,N/A,53.141853,-3.030809
-201,Dragon Terminal,Supplies,"System Entry Energy, Dragon, M+15",Subterminal,N,N/A,Ultrasonic,2,Dragon LNG,"System Entry Energy, Dragon, D+1",D+1,N/A,51.422441,-5.000599
+201,Dragon Terminal,Supplies,"System Entry Energy, Dragon, M+15",Subterminal,N,N/A,Ultrasonic,2,Dragon LNG,"System Entry Energy, Dragon, D+1",D+1,N/A,51.706174,-5.001732
 202,Easington BP Dimlington Terminal,Supplies,"System Entry Energy, Easington - Dimlington, M+15",Subterminal,N,N/A,Orifice Plate,3,Perenco,"System Entry Energy, Easington - Dimlington, D+2",D+2,N/A,54.363679,-1.114715
 203,Easington Langeled Terminal,Supplies,"System Entry Energy, Easington - Langeled, M+15",Subterminal,N,N/A,Ultrasonic,4,Gassco,"System Entry Energy, Easington-Langeled, D+1",D+1,N/A,54.363679,-1.114715
-204,Isle of Grain 1 Terminal,Supplies,"System Entry Energy, Grain NTS 1, M+15",Subterminal,N,N/A,Ultrasonic,6,NG LNG,"System Entry Energy, GrainNTS1, D+1",D+1,N/A,51.262958,0.411743
-205,Isle of Grain 2 Terminal,Supplies,"System Entry Energy, GrainNTS2, M+15",Subterminal,N,N/A,Ultrasonic,6,NG LNG,"System Entry Energy, GrainNTS2, D+1",D+1,N/A,51.262958,0.411743
+204,Isle of Grain 1 Terminal,Supplies,"System Entry Energy, Grain NTS 1, M+15",Subterminal,N,N/A,Ultrasonic,6,NG LNG,"System Entry Energy, GrainNTS1, D+1",D+1,N/A,51.447863,0.67738
+205,Isle of Grain 2 Terminal,Supplies,"System Entry Energy, GrainNTS2, M+15",Subterminal,N,N/A,Ultrasonic,6,NG LNG,"System Entry Energy, GrainNTS2, D+1",D+1,N/A,51.447863,0.67738
 206,Moffat,Supplies,"System Entry Energy, Moffat Entry , M+15",Subterminal,N,N/A,Ultrasonic,3,National Grid Gas GTO,"System Entry Energy, Moffat Entry , D+2",D+2,N/A,55.162897,-3.261467
-207,South Hook Terminal,Supplies,"System Entry Energy, SouthHook, M+15",Subterminal,N,N/A,Ultrasonic,4,South Hook LNG,"System Entry Energy, South Hook, D+2",D+2,N/A,51.420842,-4.593189
-208,St Fergus Mobil (Apache) Terminal,Supplies,"System Entry Energy, ST Fergus - Mobil, M+15",Subterminal,N,N/A,Orifice Plate,8,Apache Corporation,"System Entry Energy, ST Fergus - Mobil, D+2",D+2,N/A,57.344773,-1.504767
-209,St Fergus Shell Terminal,Supplies,"System Entry Energy, ST Fergus - Shell, M+15",Subterminal,N,N/A,Orifice Plate,3,Shell,"System Entry Energy, STFergus-Shell, D+1",D+1,N/A,57.344773,-1.504767
-210,St Fergus Total (NSMP) Terminal,Supplies,"System Entry Energy, ST Fergus - NSMP, M+15",Subterminal,N,N/A,Orifice Plate,12,px limited,"System Entry Energy, STFergus-NSMP, D+1",D+1,N/A,57.344773,-1.504767
-211,Teesside Amoco (BP CATS) Terminal,Supplies,"System Entry Energy, Teesside - BP, M+15",Subterminal,N,N/A,Orifice Plate,5,BP,"System Entry Energy, Teesside-BP, D+1",D+1,N/A,54.6116456,-1.1934073
-212,Teesside PX (Enron) Terminal,Supplies,"System Entry Energy, Teesside - PX, M+15",Subterminal,N,N/A,Orifice Plate,7,px limited,"System Entry Energy, Teesside-PX, D+1",D+1,Ultrasonic,0,0
+207,South Hook Terminal,Supplies,"System Entry Energy, SouthHook, M+15",Subterminal,N,N/A,Ultrasonic,4,South Hook LNG,"System Entry Energy, South Hook, D+2",D+2,N/A,51.722251,-5.0757
+208,St Fergus Mobil (Apache) Terminal,Supplies,"System Entry Energy, ST Fergus - Mobil, M+15",Subterminal,N,N/A,Orifice Plate,8,Apache Corporation,"System Entry Energy, ST Fergus - Mobil, D+2",D+2,N/A,57.57195,-1.86362
+209,St Fergus Shell Terminal,Supplies,"System Entry Energy, ST Fergus - Shell, M+15",Subterminal,N,N/A,Orifice Plate,3,Shell,"System Entry Energy, STFergus-Shell, D+1",D+1,N/A,57.57195,-1.86362
+210,St Fergus Total (NSMP) Terminal,Supplies,"System Entry Energy, ST Fergus - NSMP, M+15",Subterminal,N,N/A,Orifice Plate,12,px limited,"System Entry Energy, STFergus-NSMP, D+1",D+1,N/A,57.57195,-1.86362
+211,Teesside Amoco (BP CATS) Terminal,Supplies,"System Entry Energy, Teesside - BP, M+15",Subterminal,N,N/A,Orifice Plate,5,BP,"System Entry Energy, Teesside-BP, D+1",D+1,N/A,54.610346,-1.196773
+212,Teesside PX (Enron) Terminal,Supplies,"System Entry Energy, Teesside - PX, M+15",Subterminal,N,N/A,Orifice Plate,7,px limited,"System Entry Energy, Teesside-PX, D+1",D+1,Ultrasonic,54.610346,-1.196773
 213,Theddlethorpe Terminal,Supplies,"System Entry Energy, Theddlethorpe, M+15",Subterminal,N,N/A,Orifice Plate,3,ConocoPhillips,"System Entry Energy, Theddlethorpe, D+2",D+2,N/A,53.362,0.233
 214,Aldbrough Storage,Supplies,"System Entry Energy, Aldbrough, M+15",Storage,N,N/A,Ultrasonic,2,SSE,"System Entry Energy, Aldbrough, D+2",D+2,N/A,53.8004668,-0.0817768
-215,Beltoft (Hatfield Moor) Storage (Lindholme Compressor Station),Supplies,"System Entry Energy, Hatfield Moor , M+15",Storage,N,N/A,Ultrasonic,2,Scottish Power Generation,"System Entry Energy, HatfieldMoor, D+1",D+1,N/A,53.5536616,-0.9584761
-216,Hilltop Storage,Supplies,"System Entry Energy, HillTop, M+15",Storage,N,N/A,Ultrasonic,1,EDF Energy,"System Entry Energy, HillTop, D+2",D+2,N/A,53.162048,-2.212666
+215,Beltoft (Hatfield Moor) Storage (Lindholme Compressor Station),Supplies,"System Entry Energy, Hatfield Moor , M+15",Storage,N,N/A,Ultrasonic,2,Scottish Power Generation,"System Entry Energy, HatfieldMoor, D+1",D+1,N/A,53.548783,-0.765552
+216,Hilltop Storage,Supplies,"System Entry Energy, HillTop, M+15",Storage,N,N/A,Ultrasonic,1,EDF Energy,"System Entry Energy, HillTop, D+2",D+2,N/A,53.1470349,-2.4463039
 217,Hole House Farm Storage,Supplies,"System Entry Energy, Hole House Farm, M+15",Storage,N,N/A,Ultrasonic,1,EDF Energy,"System Entry Energy, Hole House Farm, D+2",D+2,N/A,53.1470349,-2.4463039
-218,Holford Storage,Supplies,"System Entry Energy, Holford , M+15",Storage,N,N/A,Ultrasonic,6,Holford Gas Storage Ltd (Uniper),"System Entry Energy, Holford, D+2",D+2,N/A,51.0095354,-3.1290931
+218,Holford Storage,Supplies,"System Entry Energy, Holford , M+15",Storage,N,N/A,Ultrasonic,6,Holford Gas Storage Ltd (Uniper),"System Entry Energy, Holford, D+2",D+2,N/A,53.226205,-2.4132166
 219,Hornsea Storage,Supplies,"System Entry Energy, Hornsea , M+15",Storage,N,N/A,Ultrasonic,1,SSE Hornsea Ltd,"System Entry Energy, Hornsea, D+2",D+2,N/A,53.921193,-0.168408
-220,Humbly Grove Storage,Supplies,"System Entry Energy, Humbly Grove, M+15",Storage,N,N/A,Ultrasonic,2,Humbly Grove Energy,"System Entry Energy, Humbly Grove, D+2",D+2,N/A,51.1938105,-1.0098267
-221,Rough Storage,Supplies,"System Entry Energy, Rough , M+15",Storage,N,N/A,Orifice Plate,3,Centrica Storage,"System Entry Energy, Rough, D+2",D+2,N/A,51.1938105,-1.0098267
+220,Humbly Grove Storage,Supplies,"System Entry Energy, Humbly Grove, M+15",Storage,N,N/A,Ultrasonic,2,Humbly Grove Energy,"System Entry Energy, Humbly Grove, D+2",D+2,N/A,51.182633,-1.363924
+221,Rough Storage,Supplies,"System Entry Energy, Rough , M+15",Storage,N,N/A,Orifice Plate,3,Centrica Storage,"System Entry Energy, Rough, D+2",D+2,N/A,54.61005,-1.196806
 222,Stublach Storage,Supplies,"System Entry Energy, Stublach, M+15",Storage,N,N/A,Ultrasonic,2,Storengy,"System Entry Energy, Stublach, D+2",D+2,N/A,53.2293333,-2.4613056

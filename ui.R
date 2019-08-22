@@ -37,6 +37,13 @@ sidebar <- dashboardSidebar(sidebarMenu(id = 'container',
 menuItem('Reporting', tabName = 'reporting', icon = icon('book')),
   menuItem("Data Configuration", tabName = "data_config", icon = icon("file-excel-o")),
 menuItem('Help', tabName = 'about', icon =icon('question')),
+conditionalPanel("input.container === 'uag_monitor'",hr(),div(style="text-align:center",class= "h3","Options"),dateRangeInput('dateRange',label = 'Date range input: yyyy-mm-dd',start = Sys.Date() - 200, end = Sys.Date() -30
+), 
+  pickerInput(inputId = "analchoice", 
+              label = "Filtration", 
+              choices = c("Bollinger Bands","20GWh", "D'Arpino(2014)",'Anomalize','ETS Forecast'), multiple = TRUE, 
+              selected = "20GWh"),div(
+uiOutput('ui.action'),style="width: 87%; float:left")),
 
 
 conditionalPanel(background = 'light-blue',"input.container === 'day_2'",hr(),div(style="text-align:center",class= "h3","Options"),
@@ -48,12 +55,12 @@ conditionalPanel(background = 'light-blue',"input.container === 'day_2'",hr(),di
               selected = c("Interrupts",'Quantile','Extreme')),
 dateInput('analysis_date','Select Date',value = Sys.Date() -30)
 
-        ,div(style="display:inline-block",actionBttn('calculate_anom','Calculate',block=TRUE, style = 'fill'),style="width: 80%; float:left")
+        ,div(actionBttn('calculate_anom','Calculate',block=TRUE, style = 'fill'),style="width: 87%; float:left")
   , br(),br(),hr(),  pickerInput(inputId = 'past_analis', label = 'Analysis List', choices=c('No Analysis')))
 ))
 
 #tags$head(tags$style(HTML(".small-box {height: 90px}"))),   solved bug 
-
+#tags$head(tags$style(HTML('.sidebar {overflow-y: scroll}'))),  also adds permanent sidebar scroller :()
 body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                            Shiny.addCustomMessageHandler("jsCode",
                                                                   function(message) {
@@ -104,35 +111,12 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
         tabItem(tabName = "uag_monitor",
                 
                 fluidRow(valueBoxOutput("uag_prc"),valueBoxOutput("uag_num"),valueBoxOutput("uag_t")),
-                fluidRow(column(width = 12, {
-                  
-                  box(title = 'UAG Time series',status = 'primary',echarts4rOutput("echartsu"), width = NULL)
-                }   ))
-                
-                , fluidRow(
-                  column(8, {box(title = 'UAG days exceeding limits',width = NULL,status = 'primary',
-                                 DT::dataTableOutput('ex')) ##show up flagged values here
-                    
-                  }), column (4,
-                              
-                              box(title = 'Options', background = 'light-blue',width = NULL, dateRangeInput('dateRange',
-                                                                                                                       label = 'Date range input: yyyy-mm-dd',
-                                                                                                                       start = Sys.Date() - 200, end = Sys.Date() -30
-                              ),selectInput('type', 'Plot Style', c('l','h','b','p'), selected = 'b'), {
-                                pickerInput(inputId = "analchoice", 
-                                            label = "Filtration", 
-                                            choices = c("Bollinger Bands","20GWh", "D'Arpino(2014)",'Anomalize','ETS Forecast'), multiple = TRUE, 
-                                            selected = "20GWh")
-                                
-                              },
-                              
-                              fluidRow(offset=1,column(1)  ,column(2,{uiOutput('ui.action')}))
-                              
-                              )
-                              
-                               )
-                )
-                  )
+            fluidRow(
+                  box(title = 'UAG Time series',status = 'primary',echarts4rOutput("echartsu"), width = NULL)),fluidRow(
+     box(title = 'UAG days exceeding limits',width = NULL,status = 'primary',
+                               DT::dataTableOutput('ex'))))
+                 
+                 
               ,
         tabItem(tabName = "cpt_tab",
                 

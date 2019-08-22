@@ -200,7 +200,7 @@ output$excess_u = renderValueBox({
   
   output$ui.action <- renderUI({
     if (is.null(input$ex_rows_selected)) return()
-    actionButton("action", "Explore Day")
+    actionBttn("action", "Explore Day",block = TRUE, style = 'fill')
   })
   gentab = observeEvent(input$action,{
     focusday =  updatefilter()[input$ex_rows_selected,1]
@@ -819,7 +819,7 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
          incProgress(s_step, message = paste("Calculating Anomalies(Fast)"))
           l=tsoutliers(getentry()[f_period_n,x])%>% xts(., order.by= index(getentry()[f_period_n,x]))
           if(sum(is.na(l)) >0){return(0)}
-          if(l[get_analytics()$Date,]>0)
+          if(l[get_analytics()$Date,]>0  & getentry()[get_analytics()$Date,x] >0)
           {
             return(1)
           }
@@ -834,7 +834,7 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
           incProgress(s_step, message = paste("Calculating Anomalies(Fast)"))
           l=tsoutliers(getexit()[f_period_n,x])%>% xts(., order.by= index(getexit()[f_period_n,x]))
           if(sum(is.na(l)) >0){return(0)}
-          if(l[get_analytics()$Date]>0)
+          if(l[get_analytics()$Date]>0 & getexit()[get_analytics()$Date,x] >0)
           {
             return(1)
           }
@@ -965,7 +965,7 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
           t_bl = as_tbl_time(t_bl, date)
           anoms =t_bl %>% time_decompose(colnames(t_bl)[2], method = 'stl') %>% anomalize(remainder, method = 'iqr') 
           anomx = xts(anoms, order.by = anoms$date)[get_analytics()$Date]
-          if(anomx$anomaly =='Yes')
+          if(anomx$anomaly =='Yes'  & getentry()[get_analytics()$Date,x] >0)
           {
             return(1)
           }
@@ -983,7 +983,7 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
           t_bl = as_tbl_time(t_bl, date)
           anoms =t_bl %>% time_decompose(colnames(t_bl)[2], method = 'stl') %>% anomalize(remainder, method = 'iqr') 
           anomx = xts(anoms, order.by = anoms$date)[get_analytics()$Date]
-          if(anomx$anomaly =='Yes')
+          if(anomx$anomaly =='Yes'  & getexit()[get_analytics()$Date,x] >0)
           {
             return(1)
           }
