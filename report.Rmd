@@ -15,10 +15,10 @@ Selected Dates: `r d1_r` to `r d2_r`.
 
 Selected Components: `r input$report_choices`
 
-#Daily UAG Reporting
+##Daily UAG Reporting
 
 ```{r,echo = FALSE,fig.height = 4}
-"##Shrinkage Plots"
+
 ug_p = tk_tbl(getactive()[selected_r,])
 
 nms <- paste("`", colnames(ug_p), "`", sep="")
@@ -30,7 +30,7 @@ print(ggplot(ug_p, aes_string(x=nms[1],y=nms[i])) + geom_line())
 
 ```
 
-```{r,echo = FALSE}
+```{r,echo = FALSE, warning= FALSE, message= FALSE}
 if('Daily Balancing Errors' %in% input$report_choices  | 'All' %in% input$report_choices )
 {
   "##Daily UAG Balancing Errors"
@@ -67,7 +67,7 @@ kable(mg, digits = 12)  %>%kable_styling(latex_options = "striped")
 
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, warning= FALSE, message= FALSE}
 if('Changepoints' %in% input$report_choices  | 'All' %in% input$report_choices )
 {
   "##Changepoints"

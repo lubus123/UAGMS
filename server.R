@@ -31,7 +31,7 @@ library(tsoutliers)
 library(shinydashboard)
 library(qcc)
 library(tibble)
-library(forecast)
+suppressMessages(library(forecast))
 library(timetk)
 library(tibbletime)
 library(anomalize)
@@ -480,6 +480,36 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
     })
   
   
+  observeEvent(input$batch,{
+    {
+      withProgress(message = 'Batch Processing', value = 0, {
+        
+    for(i in 1:nrow(updatefilter()))
+    {
+     
+          incProgress(1/nrow(updatefilter()), message = paste("Processing",i,'/',nrow(updatefilter())))
+      
+      
+      
+      
+      focusday2[['Date']] <<-  updatefilter()[i,1]
+      focusday2[['UAG']] <<- round(updatefilter()[i,2]/1e6,2)
+      focusday2[['ExcessUAG']] <<- round(abs(20-abs(round(updatefilter()[i,2]/1000000,2))),2)
+      
+      
+      analytics_holder[[as.name(format(updatefilter()[i,1]))]]<<-focusday2
+      get_analytics(focusday2)
+      Recalc_Tbl()
+      get_analytics(analytics_holder[[length(analytics_holder)]])
+      updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), selected = names(analytics_holder)[length(names(analytics_holder))])
+      
+    }
+      }
+        )
+  }
+  }
+  )
+  
   vlm = observeEvent(input$node_select_rows_selected,{
     
     #selectCells(sel_prox,which(row.names(r)==get_analytics()$Table[input$node_select_rows_selected,]$Stype))
@@ -493,6 +523,9 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
       color = 'light-blue')
   })
   
+  c1_old = reactiveVal(0)
+  c2_old = reactiveVal(0)
+  
   output$c_1 = renderCountup({
     opts = list(
       useEasing = TRUE, 
@@ -503,7 +536,9 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
       suffix = '%' 
     )
     v=round(nrow(updatefilter())/ length(seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day')),2)*100
-    cc= countup(count = v, start = 0, options = opts)
+    lp = isolate(c1_old())
+    cc= countup(count = v, start =lp, options = opts)
+    isolate(c1_old(v))
     cc
   })
   output$uag_num <- renderValueBox({
@@ -522,23 +557,37 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
     )
     v2= paste0(nrow(updatefilter()))
     
-    
-    countup(count = v2, start = 0, options = opts)
+    et = isolate(c2_old())
+    cc = countup(count = v2, start =et, options = opts)
+   
+    isolate(c2_old(v2))
+    cc
   })
   output$uag_t <- renderValueBox({
+   get_cpt_box()
+  })
+  
+  get_cpt_box = reactive({
     cc = length(d()@cpts)-1
     valueBox(
       paste0( cc, ' locations'),
-               ,subtitle = "Changepoints", icon = icon("list"),
+      ,subtitle = "Changepoints", icon = icon("list"),
       color = 'light-blue')
   })
   
   
+  
+
+  
+  
   output$sync_table =renderTable({
     
- last_update
+last_up()
   })
   
+  last_up = reactiveVal({
+   last_update
+  })
  
   output$dl_balance <- downloadHandler(
     #update primary range selector ue to poor design
@@ -978,18 +1027,16 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
   }
 
   observeEvent(input$button_DL, {
-    
-    updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], end = input$dateRange_reporting[2])
+updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], end = input$dateRange_reporting[2])
     if('Daily Balancing Errors' %in% input$report_choices  | 'All' %in% input$report_choices )
     {
-    updatePickerInput(session,'analchoice', selected = c("Bollinger Bands","20GWh", "D'Arpino(2014)",'Anomalize','ETS Forecast') )
+    updatePickerInput(session,'analchoice', selected = c("Bollinger Bands","Fixed Limit", "D'Arpino(2014)",'Anomalize','ETS Forecast') )
 }
  
     output$downloadData<<-downloadHandler(
       #update primary range selector ue to poor design
       
-      
-      
+  
       
       # For PDF output, change this to "report.pdf"
       filename = "report.pdf",
@@ -1154,8 +1201,8 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
     pbb = ma+input$bol_sd*sds
     mbb =  ma-input$bol_sd*sds
     
-    positive = rep(input$gwh_lim*1e6, length = length(pp))
-    negative = rep(-input$gwh_lim*1e6,length = length(pp))
+    positive = rep(input$gwh_lim_u*1e6, length = length(pp))
+    negative = rep(input$gwh_lim_l*1e6,length = length(pp))
     if(is.null(input$analchoice))
     {
       uppers = cbind(uppers*0,uppers*0)
@@ -1212,7 +1259,7 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
       p=cbind(0,0)
       for(i in 1:length(se))
       {
-        f=forecast(ets(as.ts(getactive()[max(se[1]-width,1):se[i],input$inp2]),model),h=1)
+        f=suppressMessages(forecast(ets(as.ts(getactive()[max(se[1]-width,1):se[i],input$inp2]),model),h=1))
         p=rbind(p,cbind(f$lower[,2],f$upper[,2]))
       }
       p=p[-1,]
@@ -1271,6 +1318,76 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
   output$echartsu = renderEcharts4r({
     get_e_chart()
   })
+  
+  
+  output$aggregate = renderEcharts4r(
+    {
+      if(input$aggregate_function == 'Sum')
+      {
+        if(input$aggregate_time == 'Weekly')
+        {
+          lp = round(apply.weekly(getactive()[,input$inp2], sum)/1e6,2)
+          lp = tk_tbl(lp)
+          o = colnames(lp)
+          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
+        }
+        if(input$aggregate_time == 'Monthly')
+        {
+          lp = round(apply.monthly(getactive()[,input$inp2], sum)/1e6,2)
+          lp = tk_tbl(lp)
+          o = colnames(lp)
+          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
+        }
+        if(input$aggregate_time == 'Quarterly')
+        {
+          lp = round(apply.quarterly(getactive()[,input$inp2], sum)/1e6,2)
+          lp = tk_tbl(lp)
+          o = colnames(lp)
+          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
+        }
+        if(input$aggregate_time == 'Yearly')
+        {
+          lp = round(apply.yearly(getactive()[,input$inp2], sum)/1e6,2)
+          lp = tk_tbl(lp)
+          o = colnames(lp)
+          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
+        }
+      }
+      if(input$aggregate_function == 'Abs Sum')
+      {
+        if(input$aggregate_time == 'Weekly')
+        {
+          lp = round(apply.weekly(getactive()[,input$inp2], function(x) abs(sum(x)))/1e6,2)
+          lp = tk_tbl(lp)
+          o = colnames(lp)
+          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
+        }
+        if(input$aggregate_time == 'Monthly')
+        {
+          lp = round(apply.monthly(getactive()[,input$inp2], function(x) abs(sum(x)))/1e6,2)
+          lp = tk_tbl(lp)
+          o = colnames(lp)
+          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
+        }
+        if(input$aggregate_time == 'Quarterly')
+        {
+          lp = round(apply.quarterly(getactive()[,input$inp2], function(x) abs(sum(x)))/1e6,2)
+          lp = tk_tbl(lp)
+          o = colnames(lp)
+          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
+        }
+        if(input$aggregate_time == 'Yearly')
+        {
+          lp = round(apply.yearly(getactive()[,input$inp2], function(x) abs(sum(x)))/1e6,2)
+          lp = tk_tbl(lp)
+          o = colnames(lp)
+          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
+        }
+      }
+      
+    }
+  )
+  
   
 get_e_chart = reactive({
   lp = updatefilter()
@@ -1333,28 +1450,7 @@ get_e_chart = reactive({
       selectPage(dp, ceil(r/10))
     
   })
-  # 
-  # output$uag = renderPlot({
-  #   dat = u_data2()
-  #   YLS = c(max(c(dat[,2], dat[,3]))*1.1, min(c(dat[,2], dat[,4]))*1.1)
-  #   #cat(file=stderr(),paste(input$inp2, input$dateRange[2],input$dateRange[1]))
-  #   #ga = getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2]
-  #   # pp = as.numeric(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2])
-  #   plot(y=dat[,2],x=as.Date(dat[,1]), type = input$type, main = input$inp2, xlab = 'Date', ylab = 'Energy', ylim = rev(YLS))
-  #   # axis.Date(1, at = seq(from =input$dateRange[1],to=input$dateRange[2], by="weeks"))
-  #   lines(as.Date(dat[,1]),dat[,5], col = 2, lty = 2)
-  #   # axis.Date(1, at=seq(input$dateRange[1],input$dateRange[2], by="1 mon"), format="%B-%Y",xlab = FALSE)
-  #   grid()
-  #   s = input$ex_rows_selected
-  #   pos = which(index(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2]) == updatefilter()[s,1])
-  #   if (length(s)) points(updatefilter()[s,1],updatefilter()[s,2], pch = 19, cex = 2, col = 2)
-  #   abline(h= 0, col = 3)
-  #   lines(as.Date(dat[,1]),dat[,3])
-  #   lines(as.Date(dat[,1]),dat[,4])
-  #   
-  # }
-  # 
-  # )
+
 #  outputOptions(output, 'uag',suspendWhenHidden = F)
   
   
@@ -1374,8 +1470,9 @@ get_e_chart = reactive({
       
       incProgress(0.33, message = paste("Updating Demand"))
       rnames = c('Shrinkage', 'Entry', 'Exit')
-      last_update[,2] = as.character(Sys.Date())
-      
+       lp = last_up()
+     lp[,2] =as.character(Sys.Date())
+      last_up(lp)
       
       
       updatexitDB()
@@ -1383,7 +1480,8 @@ get_e_chart = reactive({
       updatentryDB()
       shinyjs::enable('syncbutton')
       updateDateRangeInput(session, 'dateRange', start = input$dateRange[1], end = end(getactive()))
-      write.csv(last_update, file = 'test.csv', row.names = FALSE)
+      write.csv(last_up(), file = 'last_update.csv', row.names = FALSE)
+      
       shinyalert("Update complete", "Databases are now synced.", type = "success")
     })
   })

@@ -37,7 +37,7 @@ sidebar <- dashboardSidebar(sidebarMenu(id = 'container',
 menuItem('Reporting', tabName = 'reporting', icon = icon('book')),
   menuItem("Data Configuration", tabName = "data_config", icon = icon("file-excel-o")),
 menuItem('Help', tabName = 'about', icon =icon('question')),
-conditionalPanel("input.container === 'uag_monitor'",hr(),div(style="text-align:center",class= "h3","Options"),div(style="text-align:center",class= "h5","Daily UAG"),dateRangeInput('dateRange',label = 'Date range input: yyyy-mm-dd',start = Sys.Date() - 200, end = Sys.Date() -30
+conditionalPanel("input.container === 'uag_monitor'",hr(),div(style="text-align:center",class= "h3","Options"),div(style="text-align:center",class= "h5","Daily UAG"),dateRangeInput('dateRange',label = 'Date range',start = Sys.Date() - 200, end = Sys.Date() -30
 ), 
   pickerInput(inputId = "analchoice", 
               label = "Filtration", 
@@ -47,9 +47,14 @@ conditionalPanel("input.container === 'uag_monitor'",hr(),div(style="text-align:
 
 conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Bollinger Bands')",sliderInput('bol_sd','Bollinger Band s.d.', min = 0.5,max=5,step = 0.25,value = 2) ),
 
-conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Fixed Limit') ", sliderInput('gwh_lim','Fixed Limit:' , min = 0.5, max = 50, step = 0.5, value = 20) ),
+conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Fixed Limit') ", sliderInput('gwh_lim_l','Lower Limit:' , min = -50, max = -0.5, step = 0.5, value = -20) ),
+conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Fixed Limit') ", sliderInput('gwh_lim_u','Upper Limit:' , min = 0.5, max = 50, step = 0.5, value = 20) ),
 div(
-actionBttn('action','Explore Day',style='fill',block = TRUE),style="width: 87%; float:left"), br(),br(),hr(), div(style="text-align:center",class= "h5","Aggregate UAG")),
+actionBttn('action','Explore Day',style='fill',block = TRUE),style="width: 87%; float:left"),div(
+  actionBttn('batch','Batch Analysis',style='fill',block = TRUE),style="width: 87%; float:left"),br(), br(), br(),br(),hr(), div(style="text-align:center",class= "h5","Aggregate UAG")
+,pickerInput('aggregate_function', 'Aggregate Function', choices = c('Sum', 'Abs Sum'), selected = 'Sum'),
+pickerInput('aggregate_time', 'Aggregate Level', choices = c('Weekly', 'Monthly','Quarterly', 'Yearly'), selected = 'monthly')
+),
 
 
 conditionalPanel(background = 'light-blue',"input.container === 'day_2'",hr(),div(style="text-align:center",class= "h3","Options"),
@@ -145,9 +150,9 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                 
                 fluidRow(valueBoxOutput("uag_prc"),valueBoxOutput("uag_num"),valueBoxOutput("uag_t")),
             fluidRow(
-                  box(title = 'UAG Time series',status = 'primary',echarts4rOutput("echartsu"), width = NULL)),fluidRow(
+                  box(title = 'Daily UAG',status = 'primary',echarts4rOutput("echartsu"), width = NULL)),fluidRow(
      box(title = 'UAG days exceeding limits',width = NULL,status = 'primary',
-                               DT::dataTableOutput('ex'))))
+                               DT::dataTableOutput('ex'))), fluidRow(box(title = 'Aggregate UAG', status  = 'info',width = NULL, echarts4rOutput('aggregate'))))
                  
                  
               ,
