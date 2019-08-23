@@ -37,6 +37,11 @@ sidebar <- dashboardSidebar(sidebarMenu(id = 'container',
 menuItem('Reporting', tabName = 'reporting', icon = icon('book')),
   menuItem("Data Configuration", tabName = "data_config", icon = icon("file-excel-o")),
 menuItem('Help', tabName = 'about', icon =icon('question')),
+
+
+
+############### UAG MONITOR SIDEBAR ########################
+
 conditionalPanel("input.container === 'uag_monitor'",hr(),div(style="text-align:center",class= "h3","Options"),div(style="text-align:center",class= "h5","Daily UAG"),dateRangeInput('dateRange',label = 'Date range',start = Sys.Date() - 200, end = Sys.Date() -30
 ), 
   pickerInput(inputId = "analchoice", 
@@ -56,6 +61,8 @@ actionBttn('action','Explore Day',style='fill',block = TRUE),style="width: 87%; 
 pickerInput('aggregate_time', 'Aggregate Level', choices = c('Weekly', 'Monthly','Quarterly', 'Yearly'), selected = 'monthly')
 ),
 
+###################### DAY EXPLORER SIDEBAR ########################
+
 
 conditionalPanel(background = 'light-blue',"input.container === 'day_2'",hr(),div(style="text-align:center",class= "h3","Options"),
   #materialSwitch(inputId = "atr_filter",value = FALSE,  label = "Display Overlay", status = "primary", right = TRUE),
@@ -66,8 +73,17 @@ pickerInput(inputId = "flag_filter", label = 'Flags',
 dateInput('analysis_date','Select Date',value = Sys.Date() -30)
 
         ,div(actionBttn('calculate_anom','Calculate',block=TRUE, style = 'fill'),style="width: 87%; float:left")
-  , br(),br(),hr(),  pickerInput(inputId = 'past_analis', label = 'Analysis List', choices=c('No Analysis')))
+  , br(),br(),hr(),  pickerInput(inputId = 'past_analis', label = 'Analysis List', choices=c('No Analysis')),
+conditionalPanel("!input.past_analis.includes('No Analysis')",
+div( downloadBttn('download_analyis','Download Analysis',block=TRUE, style = 'fill'),style="width: 87%; float:left")
+)
+
+
+)
 ))
+
+
+
 
 #tags$head(tags$style(HTML(".small-box {height: 90px}"))),   solved bug 
 #tags$head(tags$style(HTML('.sidebar {overflow-y: scroll}'))),  also adds permanent sidebar scroller :()

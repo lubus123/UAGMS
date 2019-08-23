@@ -198,7 +198,7 @@ output$excess_u = renderValueBox({
     if(input$analysis_date > end(getexit()) | input$analysis_date > end(getentry()) | input$analysis_date < start(getexit()) | input$analysis_date < start(getentry()))
     {
       shinyalert('Warning!', 'Selected date is outside of flow database range. Try updating the local DB, or uploading your own data!', type = 'warning')
-      updateDateInput(session, 'analysis_date', end(getentry()))
+      updateDateInput(session, 'analysis_date', value = end(getentry())-30)
     }
   })
   
@@ -506,7 +506,9 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
     }
       }
         )
-  }
+      shinyalert('Batch join Complete!','You can download the analysis in the day explorer', 'success')
+      
+      }
   }
   )
   
@@ -1025,6 +1027,31 @@ last_up()
   analytics_holder[[as.name(format(get_analytics()$Date))]]$Table <<- FIN_T
 
   }
+  
+  
+  
+  output$download_analyis <- downloadHandler(
+    #update primary range selector ue to poor design
+    
+    
+   
+    
+    
+    # For PDF output, change this to "report.pdf"
+    filename = "Flagged_values.csv",
+    content = function(file) {
+      # Copy the report file to a temporary directory before processing it, in
+      # case we don't have write permissions to the current working dir (which
+      # can happen when deployed).
+      
+      merged_table = analytics_holder %>% map(~mutate(.$'Table', Day = .$'Date') %>% filter(Flags != '')) %>% bind_rows
+      
+      write.csv2( merged_table,file)
+      
+    }
+  )
+  
+
 
   observeEvent(input$button_DL, {
 updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], end = input$dateRange_reporting[2])
