@@ -1059,7 +1059,7 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
     {
     updatePickerInput(session,'analchoice', selected = c("Bollinger Bands","Fixed Limit", "D'Arpino(2014)",'Anomalize','ETS Forecast') )
 }
- 
+
     output$downloadData<<-downloadHandler(
       #update primary range selector ue to poor design
       
@@ -1179,19 +1179,15 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
   
   output$summary_text = renderText(paste('Available joint timeframe: ',max(statustable()[,2]),' to ', min(statustable()[,3])))
  
-  u_data2 = reactive({
-    o = u_data()
-  p=1
-    df = data.frame(o[[1]], o[[2]], apply(o[[3]], 1, min), apply(o[[4]], 1, max),o[[5]])
-    colnames(df) = c('Date', input$inp2, 'Upper', 'Lower', 'Mean')
-    df[,2:4] = round(df[,2:4],2)
-    return(df)
-  })
-  
+
   
   
    updatefilter = reactive({
-    Filter = u_data2()
+    Filter = u_data()$DB
+    if(is.na(Filter[[3]][1]))
+    {
+      return(Filter[,1:2])
+    }
     Filter = Filter %>% dplyr::filter(.[[2]]> Upper | .[[2]] < Lower)
     # Filter = Filter[DT::order('Date',decreasing = TRUE )]  how do you order there things???
     Filter
@@ -1316,11 +1312,64 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
       
     }
    ## rmean = rollmean(ga, 7 )
-    return(list(selected[1:length(pp)], pp, uppers, lowers,ma))
+
+    if(length(input$analchoice) == 0)
+    {
+      upper = NA
+   lower = NA
+    }
+    if(length(input$analchoice == 1))
+      
+    {
+      upper = round(uppers[,2],2)
+      lower = round(lowers[,2],2)
+    }
+    
+    if(length(input$analchoice) >1)
+    {
+      uppers = uppers[,-1]
+      lowers = lowers[,-1]
+      if(input$mode_op_uag)
+      {
+        upper = round(apply(uppers, 1, min),2)
+        lower = round(apply(lowers, 1, max),2)
+      }
+      else{
+        upper = round(apply(uppers, 1, max),2)
+        lower = round(apply(lowers, 1, min),2)
+      }
+      
+    }
+    
+    df = data.frame(selected[1:length(pp)], pp, upper, lower,ma)
+    
+    
+    colnames(df) = c('Date', input$inp2, 'Upper', 'Lower', 'Mean')
+    
+    
+    
+    return(list(DB =df, uppers = uppers, lowers = lowers))
+    
+    
    
     
   })
-  output$ex = DT::renderDataTable(updatefilter()[,-5], selection=  list(mode='single', selected =c(1)),options = list(scrollX = TRUE))
+   
+ 
+  output$ex = DT::renderDataTable(
+    
+    {
+      
+      if('Mean' %in% colnames(updatefilter()))
+      {
+        r = which(colnames(updatefilter()) == 'Mean')
+         return(updatefilter()[,-r])
+      }
+   return( updatefilter())
+      
+      
+    }, selection=  list(mode='single'),options = list(scrollX = TRUE)
+    )
   dp = dataTableProxy('ex')
   sel_prox = dataTableProxy('secondary_sel')
   #print(outputOptions(output))
@@ -1419,7 +1468,7 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
 get_e_chart = reactive({
   lp = updatefilter()
   g=show_point()
-  dat = u_data2()
+  dat = u_data()$DB
   
   if(nrow(dat) < 200)
   {
@@ -1431,6 +1480,14 @@ get_e_chart = reactive({
   if(nrow(dat) >900){th=0.5}
   
   ds = which(dat[,1] %in% lp[,1])
+  
+  
+  if(!('Upper' %in% colnames(dat)))
+  {
+    dat$Upper = 0
+    dat$Lower = 0
+  }
+  
   dat$Anomalies = NA
   dat$Anomalies[ds] = dat[ds,2]
   #YLS = c(max(c(dat[,2], dat[,3]))*1.1, min(c(dat[,2], dat[,4]))*1.1)/1e6
@@ -1438,18 +1495,9 @@ get_e_chart = reactive({
   o= colnames(dat)
   
   
-  
-  if(!g)
-  {
-    return(dat%>% e_charts_(o[1],dispose = TRUE) %>%
-             e_line(Anomalies, symbolSize = '8', symbol = 'circle', connectNulls = FALSE) %>%
-             e_line_(o[2],symbol = 'none',lineStyle= list(width =list(th),color=list('rgb(0,0,0'))) %>% 
-             e_line_(o[3],symbol ='none', showSymbol = list('false'),hoverAnimation = list('false'),lineStyle= list(type =list('dotted'),color=list('rgb(100,100,100')))%>% 
-             e_line_(o[4],symbol ='none',lineStyle= list(type =list('dotted'),color=list('rgb(100,100,100'))) %>%
-             e_y_axis(name='Energy (GWh)'))
-  }
-  e_plot =dat%>% e_charts_(o[1],dispose = FALSE) %>%
-    e_line(Anomalies, symbolSize = '8', connectNulls = FALSE) %>%
+
+ e_plot= dat%>% e_charts_(o[1],dispose = FALSE) %>%
+    e_line(Anomalies, symbolSize = '8', symbol = 'circle', connectNulls = FALSE) %>%
     e_line_(o[2],symbol = 'none',lineStyle= list(width =list(th),color=list('rgb(0,0,0'))) %>% 
     e_line_(o[3],symbol ='none', showSymbol = list('false'),hoverAnimation = list('false'),lineStyle= list(type =list('dotted'),color=list('rgb(100,100,100')))%>% 
     e_line_(o[4],symbol ='none',lineStyle= list(type =list('dotted'),color=list('rgb(100,100,100'))) %>%
@@ -1457,15 +1505,19 @@ get_e_chart = reactive({
   
   
   s = input$ex_rows_selected
-    xAxis = updatefilter()[s,1]
-    yAxis = updatefilter()[s,2]/1e6
-    value = round(updatefilter()[s,2]/1e6,1)
-    l =list(xAxis =xAxis,yAxis = yAxis,value= value)
-    e_plot = e_plot %>% e_mark_point('Anomalies', data = l)
-
+  xAxis = updatefilter()[s,1]
+  yAxis = updatefilter()[s,2]/1e6
+  value = round(updatefilter()[s,2]/1e6,1)
+  l =list(xAxis =xAxis,yAxis = yAxis,value= value)
+  e_plot = e_plot %>% e_mark_point('Anomalies', data = l)
+  
   ##  dat%>% e_charts_(o[1]) %>% e_line_(o[2],symbol = 'none',lineStyle= list(type = list('dashed')))
   
   e_plot
+  
+  
+  
+  
   
 })
   observeEvent(input$echartsu_clicked_data,{

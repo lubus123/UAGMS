@@ -49,7 +49,7 @@ conditionalPanel("input.container === 'uag_monitor'",hr(),div(style="text-align:
               choices = c("Bollinger Bands","Fixed Limit", "D'Arpino(2014)",'Anomalize','ETS Forecast'), multiple = TRUE, 
               selected = "Fixed Limit"), hidden(materialSwitch(inputId = "show_d_hack2",value = TRUE,  label = "Display Overlay", 
                                                                 status = "primary", right = TRUE)),
-
+switchInput('mode_op_uag',label =  'Limit Merge', value = TRUE, onLabel = 'Min', offLabel = 'Max', width = '150px'),
 conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Bollinger Bands')",sliderInput('bol_sd','Bollinger Band s.d.', min = 0.5,max=5,step = 0.25,value = 2) ),
 
 conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Fixed Limit') ", sliderInput('gwh_lim_l','Lower Limit:' , min = -50, max = -0.5, step = 0.5, value = -20) ),

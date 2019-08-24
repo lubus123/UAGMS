@@ -35,23 +35,25 @@ if('Daily Balancing Errors' %in% input$report_choices  | 'All' %in% input$report
 {
   "##Daily UAG Balancing Errors"
   u = u_data()
-u1 = (u[[3]])
+  UAG= u$DB[,2]
+  u1 = cbind(UAG,u$lowers)
+u2 = cbind(UAG,u$uppers)
 
-u2 = (u[[4]])
 
-UAG= u[[2]]
+
+
 u1[is.nan(u1)] = 2e8
 u2[is.nan(u2)] = -2e8
 for(i in 1:nrow(u1))
 {
  for(j in 1:ncol(u1))
  {
-   if(u1[i,j] > UAG[i]){u1[i,j] =0}
-   if(u2[i,j] < UAG[i]){u2[i,j] =0}
+   if(u1[i,j] < UAG[i]){u1[i,j] =0}
+   if(u2[i,j] > UAG[i]){u2[i,j] =0}
  }
 }
-u1_f = which(apply(u1,1, function(x){sum(x!=0)})>0)
-u2_f = which(apply(u2,1, function(x){sum(x!=0)})>0)
+u1_f = which(apply(u1[,-1],1, function(x){sum(x!=0)})>0)
+u2_f = which(apply(u2[,-1],1, function(x){sum(x!=0)})>0)
 colnames(u1) = c('UAG','Bol','Legacy','Anom','ETS','ARP')
 colnames(u2) = c('UAG','Bol','Legacy','Anom','ETS','ARP')
 
