@@ -37,13 +37,19 @@
 <h4 class="date">20/08/2019</h4>
 
 
+<div id="TOC">
+<ul>
+<li><a href="#faq">FAQ</a><ul>
+<li><a href="#can-i-use-my-own-data-instead-of-the-preloaded-database-default">Can I use my own data instead of the preloaded database (default)?</a></li>
+<li><a href="#how-can-i-download-the-results-of-my-analysis">How can I download the results of my analysis</a></li>
+<li><a href="#the-changepoint-analysis-looks-supsicious---i-expect-to-find-some-changes-in-my-data">The changepoint analysis looks supsicious - I expect to find some changes in my data!</a></li>
+</ul></li>
+</ul>
+</div>
 
-<p>Eventually, a fully featured User Guide with detailed workflow examples will be featured here.</p>
+<p>Eventually, a fully featured User Guide with detailed workflow examples will be placed here.</p>
 <div id="faq" class="section level1">
 <h1>FAQ</h1>
-<ul>
-<li><a href="#Can-I-use-my-own-data-instead-of-the-preloaded-database-(default)?">Can I use my own data instead of the preloaded database (default)?</a></li>
-</ul>
 <div id="can-i-use-my-own-data-instead-of-the-preloaded-database-default" class="section level2">
 <h2>Can I use my own data instead of the preloaded database (default)?</h2>
 <p>You can upload your own datasource by navigating to the ‘Data Configuration Tab’ on the left hand side, and uploading it in a .csv format. You can choose individual files for Entry/Exit Shrinkage.</p>
@@ -53,6 +59,15 @@
 <p class="caption">Example csv file</p>
 </div>
 <p>Note: Uploading custom .csv for entry or exit will disable some of the relational functionality.</p>
+</div>
+<div id="how-can-i-download-the-results-of-my-analysis" class="section level2">
+<h2>How can I download the results of my analysis</h2>
+<p>There are 2 pathways to follow when you want to download results. The reporting tab allows you to select modules to include in a report, and then runs the analysis using the options selected in-app and collates this in a .pdf format.</p>
+<p>The results of a batch analysis of an interval of individual days (returning the flagged nodes for each) can be downloaded in the Day Explorer. Note that you need to select the range in the UAG monitor tab.</p>
+</div>
+<div id="the-changepoint-analysis-looks-supsicious---i-expect-to-find-some-changes-in-my-data" class="section level2">
+<h2>The changepoint analysis looks supsicious - I expect to find some changes in my data!</h2>
+<p>Whilst the changepoint models use default statistically sound parameters for the significance testing, scenarios may arise where an estimate of a known change is required; this can be achieved by lowering the significance thresholds. Whilst these differe according to algorithm, these controls have been provided in the form of sliders in the changepoint tab. As we canot specify a required number of changepoints when using the PELT procedure, you must select ‘BinSeg’ to be able to change the significance levels for that algorithm.</p>
 </div>
 </div>
 

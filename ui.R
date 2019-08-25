@@ -49,7 +49,7 @@ conditionalPanel("input.container === 'uag_monitor'",hr(),div(style="text-align:
               choices = c("Bollinger Bands","Fixed Limit", "D'Arpino(2014)",'Anomalize','ETS Forecast'), multiple = TRUE, 
               selected = "Fixed Limit"), hidden(materialSwitch(inputId = "show_d_hack2",value = TRUE,  label = "Display Overlay", 
                                                                 status = "primary", right = TRUE)),
-switchInput('mode_op_uag',label =  'Limit Merge', value = TRUE, onLabel = 'Min', offLabel = 'Max', width = '150px'),
+switchInput('mode_op_uag',label =  'Limits', value = TRUE, onLabel = 'Min', offLabel = 'Max', width = '150px'),
 conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Bollinger Bands')",sliderInput('bol_sd','Bollinger Band s.d.', min = 0.5,max=5,step = 0.25,value = 2) ),
 
 conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Fixed Limit') ", sliderInput('gwh_lim_l','Lower Limit:' , min = -50, max = -0.5, step = 0.5, value = -20) ),
@@ -156,7 +156,7 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                 fluidRow( box(status='primary',title ='Help',width =12,column(width = 11,height = 1000,htmlOutput('userguide'))),box(status='primary',title ='About',width =12,column(width = 11, 
                                                                                                                                                                                                          fluidRow(
                                                                                                                                                                                                            align = "center",h1('UAGMS'),h4('Unnacounted for Gas Management Suite'),
-                                                                                                                                                                                                           'Version .1 Alpha ',br(),'For Queries, contact lubomir.botev@manchester.ac.uk',
+                                                                                                                                                                                                           'Version Alpha , build ',br(),'For Queries, contact lubomir.botev@manchester.ac.uk',
                                                                                                                                                                                                            br(), 'Analytics performed in  R (GPL-2 | GPL-3)', br(), 'Developed at the University of Manchester',br(),tags$img(src='mcrlogo.jpg',height='60',width='160'),br(),'2019')))
                 )),
         
@@ -168,7 +168,7 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
             fluidRow(
                   box(title = 'Daily UAG',status = 'primary',echarts4rOutput("echartsu"), width = NULL)),fluidRow(
      box(title = 'UAG days exceeding limits',width = NULL,status = 'primary',
-                               DT::dataTableOutput('ex'))), fluidRow(box(title = 'Aggregate UAG', status  = 'info',width = NULL, echarts4rOutput('aggregate'))))
+                               DT::dataTableOutput('ex'))), fluidRow(box(title = 'Aggregate UAG',status  = 'info',width = NULL, echarts4rOutput('aggregate'))))
                  
                  
               ,

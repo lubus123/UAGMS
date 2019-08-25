@@ -7,13 +7,12 @@ output:
         theme: null
         highlight: null
         mathjax: null
+        toc: true
 ---
 
-Eventually, a fully featured User Guide with detailed workflow examples will be featured here. 
+Eventually, a fully featured User Guide with detailed workflow examples will be placed here. 
 
 # FAQ
-- [Can I use my own data instead of the preloaded database (default)?](#Can-I-use-my-own-data-instead-of-the-preloaded-database-(default)?)
-
 
 ## Can I use my own data instead of the preloaded database (default)?
 
@@ -25,3 +24,13 @@ It must be formated with column names in the first row, and the first column mus
 
 
 Note: Uploading custom .csv for entry or exit will disable some of the relational functionality.
+
+## How can I download the results of my analysis 
+
+There are 2 pathways to follow when you want to download results. The reporting tab allows you to select modules to include in a report, and then runs the analysis using the options selected in-app and collates this in a .pdf format. 
+
+The results of a batch analysis of an interval of individual days (returning the flagged nodes for each) can be downloaded in the Day Explorer. Note that you need to select the range in the UAG monitor tab. 
+
+## The changepoint analysis looks supsicious - I expect to find some changes in my data!
+
+Whilst the changepoint models use default statistically sound parameters for the significance testing, scenarios may arise where an estimate of a known change is required; this can be achieved by lowering the significance thresholds. Whilst these differe according to algorithm, these controls have been provided in the form of sliders in the changepoint tab. As we canot specify a required number of changepoints when using the PELT procedure, you must select 'BinSeg' to be able to change the significance levels for that algorithm. 

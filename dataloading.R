@@ -28,7 +28,7 @@ library(xts)
 
 
 DL_ENABLE = FALSE ##prevent data updateing by setting FALSE
-
+aux_df <- read_csv("aux_df.csv")
 last_update <<-(read_csv("last_update.csv", col_types = cols(`Last Updated` = col_character())))
 
 processuag = function(){  ## UAG Loading function

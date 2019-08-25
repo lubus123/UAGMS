@@ -1395,9 +1395,18 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
     get_e_chart()
   })
   
+  ################## AGGREGATE PLOTS ############################
   
   output$aggregate = renderEcharts4r(
     {
+      
+      opts = list(
+        legend =list(
+          list(
+          show = 'false'
+          )
+        )
+      )
       if(input$aggregate_function == 'Sum')
       {
         if(input$aggregate_time == 'Weekly')
@@ -1405,22 +1414,79 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
           lp = round(apply.weekly(getactive()[,input$inp2], sum)/1e6,2)
           lp = tk_tbl(lp)
           o = colnames(lp)
-          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
+          e= e_charts(dispose = FALSE) %>% 
+            e_list(list(
+              xAxis = list(
+                type = "category",
+                data = lp[,1][[1]]
+              ),
+              yAxis = list(
+                type = "value"
+              )
+            )) %>% 
+            e_list(list(
+              
+              series = list(
+                list(
+                  type = "bar",
+                  data = lp[,2][[1]]
+                )
+              )
+            ), TRUE)%>% e_y_axis(name = 'Energy (GWh)')%>% e_tooltip() %>%e_datazoom(x_index = 0,toolbox = FALSE, type = 'slider', minSpan = list('5'), bottom = list('0'))
+          return(e)   
         }
         if(input$aggregate_time == 'Monthly')
         {
           lp = round(apply.monthly(getactive()[,input$inp2], sum)/1e6,2)
           lp = tk_tbl(lp)
           o = colnames(lp)
-          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
-        }
+          
+        e= e_charts(dispose = FALSE) %>% 
+            e_list(list(
+              xAxis = list(
+                type = "category",
+                data = lp[,1][[1]]
+              ),
+              yAxis = list(
+                type = "value"
+              )
+            )) %>% 
+            e_list(list(
+              
+              series = list(
+                list(
+                  type = "bar",
+                  data = lp[,2][[1]]
+                )
+              )
+            ), TRUE)%>% e_y_axis(name = 'Energy (GWh)') %>%e_datazoom(x_index = 0,toolbox = FALSE, type = 'slider', minSpan = list('5'), bottom = list('0'))
+       return(e)
+         }
         if(input$aggregate_time == 'Quarterly')
         {
           lp = round(apply.quarterly(getactive()[,input$inp2], sum)/1e6,2)
           lp = tk_tbl(lp)
           o = colnames(lp)
-          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
-        }
+          e= e_charts(dispose = FALSE) %>% 
+            e_list(list(
+              xAxis = list(
+                type = "category",
+                data = lp[,1][[1]]
+              ),
+              yAxis = list(
+                type = "value"
+              )
+            )) %>% 
+            e_list(list(
+              
+              series = list(
+                list(
+                  type = "bar",
+                  data = lp[,2][[1]]
+                )
+              )
+            ), TRUE)%>% e_y_axis(name = 'Energy (GWh)') %>%e_datazoom(x_index = 0,toolbox = FALSE, type = 'slider', minSpan = list('5'), bottom = list('0'))
+          return(e)     }
         if(input$aggregate_time == 'Yearly')
         {
           lp = round(apply.yearly(getactive()[,input$inp2], sum)/1e6,2)
@@ -1436,34 +1502,106 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
           lp = round(apply.weekly(getactive()[,input$inp2], function(x) abs(sum(x)))/1e6,2)
           lp = tk_tbl(lp)
           o = colnames(lp)
-          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
-        }
+          e= e_charts(dispose = FALSE) %>% 
+            e_list(list(
+              xAxis = list(
+                type = "category",
+                data = lp[,1][[1]]
+              ),
+              yAxis = list(
+                type = "value"
+              )
+            )) %>% 
+            e_list(list(
+              
+              series = list(
+                list(
+                  type = "bar",
+                  data = lp[,2][[1]]
+                )
+              )
+            ), TRUE)%>% e_y_axis(name = 'Energy (GWh)') %>%e_datazoom(x_index = 0,toolbox = FALSE, type = 'slider', minSpan = list('5'), bottom = list('0'))
+          return(e) }
         if(input$aggregate_time == 'Monthly')
         {
           lp = round(apply.monthly(getactive()[,input$inp2], function(x) abs(sum(x)))/1e6,2)
           lp = tk_tbl(lp)
           o = colnames(lp)
-          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
-        }
+          e= e_charts(dispose = FALSE) %>% 
+            e_list(list(
+              xAxis = list(
+                type = "category",
+                data = lp[,1][[1]]
+              ),
+              yAxis = list(
+                type = "value"
+              )
+            )) %>% 
+            e_list(list(
+              
+              series = list(
+                list(
+                  type = "bar",
+                  data = lp[,2][[1]]
+                )
+              )
+            ), TRUE)%>% e_y_axis(name = 'Energy (GWh)') %>%e_datazoom(x_index = 0,toolbox = FALSE, type = 'slider', minSpan = list('5'), bottom = list('0'))
+          return(e) }
         if(input$aggregate_time == 'Quarterly')
         {
           lp = round(apply.quarterly(getactive()[,input$inp2], function(x) abs(sum(x)))/1e6,2)
           lp = tk_tbl(lp)
           o = colnames(lp)
-          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
-        }
+          e= e_charts(dispose = FALSE) %>% 
+            e_list(list(
+              xAxis = list(
+                type = "category",
+                data = lp[,1][[1]]
+              ),
+              yAxis = list(
+                type = "value"
+              )
+            )) %>% 
+            e_list(list(
+              
+              series = list(
+                list(
+                  type = "bar",
+                  data = lp[,2][[1]]
+                )
+              )
+            ), TRUE)%>% e_y_axis(name = 'Energy (GWh)') %>%e_datazoom(x_index = 0,toolbox = FALSE, type = 'slider', minSpan = list('5'), bottom = list('0'))
+          return(e) }
         if(input$aggregate_time == 'Yearly')
         {
           lp = round(apply.yearly(getactive()[,input$inp2], function(x) abs(sum(x)))/1e6,2)
           lp = tk_tbl(lp)
           o = colnames(lp)
-          return(lp %>% e_charts_(o[1],dispose = FALSE) %>% e_bar_(o[2]) %>% e_y_axis(name = 'Energy (GWh)'))
-        }
+          e= e_charts(dispose = FALSE) %>% 
+            e_list(list(
+              xAxis = list(
+                type = "category",
+                data = lp[,1][[1]]
+              ),
+              yAxis = list(
+                type = "value"
+              )
+            )) %>% 
+            e_list(list(
+              
+              series = list(
+                list(
+                  type = "bar",
+                  data = lp[,2][[1]]
+                )
+              )
+            ), TRUE)%>% e_y_axis(name = 'Energy (GWh)') %>%e_datazoom(x_index = 0,toolbox = FALSE, type = 'slider', minSpan = list('5'), bottom = list('0'))
+          return(e)}
       }
       
     }
   )
-  
+  ############################# UAG PLOT #######################################
   
 get_e_chart = reactive({
   lp = updatefilter()
@@ -1496,7 +1634,7 @@ get_e_chart = reactive({
   
   
 
- e_plot= dat%>% e_charts_(o[1],dispose = FALSE) %>%
+ e_plot= dat%>% e_charts_(o[1],dispose = FALSE) %>% e_tooltip() %>%
     e_line(Anomalies, symbolSize = '8', symbol = 'circle', connectNulls = FALSE) %>%
     e_line_(o[2],symbol = 'none',lineStyle= list(width =list(th),color=list('rgb(0,0,0'))) %>% 
     e_line_(o[3],symbol ='none', showSymbol = list('false'),hoverAnimation = list('false'),lineStyle= list(type =list('dotted'),color=list('rgb(100,100,100')))%>% 
