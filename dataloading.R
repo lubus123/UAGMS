@@ -29,6 +29,20 @@ library(xts)
 
 DL_ENABLE = FALSE ##prevent data updateing by setting FALSE
 aux_df <- read_csv("aux_df.csv")
+aux2 <- read_csv("aux2.csv", col_types = cols(X1 = col_skip()))
+aux_xts = xts(data.frame(aux2[,-1]), order.by = aux2[[1]])
+colnames(aux_xts) = colnames(aux2)[-1]
+
+
+order_ldz = sapply(aux_df, function(x) {sub(".*LDZ(.*?) *).*", "\\1",x)})[3:15] %>% substring(2)
+LDZ_xts = aux_xts[,3:15]
+
+
+load('Models_R.Rdata')
+load('Models.Rdata')
+
+
+
 last_update <<-(read_csv("last_update.csv", col_types = cols(`Last Updated` = col_character())))
 
 processuag = function(){  ## UAG Loading function
@@ -60,7 +74,12 @@ entrym <- read_csv("entrym.csv", col_types = cols("ApplicableFor" = col_date(for
 
 
 
-
+updateauxDB = function(){
+  
+  
+  
+  
+}
 
 
 
