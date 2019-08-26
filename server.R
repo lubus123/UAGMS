@@ -13,6 +13,7 @@ library(readxl)
 library(shinyWidgets)
 library(tinytex)
 library(xts)
+library(fastDummies)
 library(dplyr)
 library(purrr)
 library(stringr)
@@ -422,26 +423,75 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
     {
       wkv=getentry()[,get_analytics()$Table[input$node_select_rows_selected,]$Name]
    tval = getentry()[get_analytics()$Date,get_analytics()$Table[input$node_select_rows_selected,]$Name]
-      
+     
       }
     else{
       wkv=getexit()[,get_analytics()$Table[input$node_select_rows_selected,]$Name]
       tval = getexit()[get_analytics()$Date,get_analytics()$Table[input$node_select_rows_selected,]$Name]
+     
     }
     percentage_online_total=round(sum(wkv>0)/ length(wkv),2)
     percentage_online_historic=round(sum(wkv[(length(wkv)-30):length(wkv)]>0)/ 30,2)
     node_sd = sd(wkv[wkv>0])/1e6
       node_nz_mean=mean(wkv[wkv!=0])/1e6
-      node_type = 0
       node_max=max(wkv)/1e6
     node_pmax= (tval/1e6)/node_max
     valQ = ecdf(as.numeric(wkv[wkv>0]))(tval)
-    return(data.frame(Statistic = c('Total Online %', '30 Day Online %', 'Standard Deviation (GWh)', 'Mean (GWh)', 'Type','Max (GWh)', '% Max', 'Quantile'),Values = c(round(percentage_online_total,2),round(percentage_online_historic,2), round(node_sd,2), round(node_nz_mean,2), node_type, round(node_max,2), round(node_pmax,2), round(valQ,2))))
+    
+    
+      
+      return(data.frame(Statistic = c('Total Online %', '30 Day Online %', 'Standard Deviation (GWh)', 'Mean (GWh)','Max (GWh)', '% Max', 'Quantile'),Values = c(round(percentage_online_total,2),round(percentage_online_historic,2), round(node_sd,2), round(node_nz_mean,2), round(node_max,2), round(node_pmax,2), round(valQ,2))))
+      
+      
+       ## Return this if using own data. 
+  
+  
+    
+    }
+    )
+  
+  get_selected_Node = reactive(
+  {
+    a=1
+    a=2
+    if(get_analytics()$Table[input$node_select_rows_selected,]$Type == 'Supplies')
+    {
+      nodeentry = dllist[dllist$Name ==get_analytics()$Table[input$node_select_rows_selected,]$Name & dllist$Type
+                         =='Supplies',]
+    }
+    else{
+      nodeentry = dllist[dllist$Name ==get_analytics()$Table[input$node_select_rows_selected,]$Name & dllist$Type
+                         =='Demand',]
+    }
+    return(nodeentry)
+  }  )
+  
+  
+  output$Q_info = DT::renderDataTable(get_qualitative_info(), options = list(dom = 't'))
+  
+  get_qualitative_info = reactive({ ##### structure (Trend/ Season )
+    a=2
+    a=3
+    if(input$switch_exit & input$switch_entry & !is.null(input$node_select_rows_selected ))
+    {
+    nodeentry = get_selected_Node()
+    return_list= list()
+    return_list[['Subtype']]= nodeentry$Stype
+    return_list [['Owner']]= nodeentry$Owner
+    return_list [['Meter type']]= nodeentry$Mtype
+    return_list [['Streams']]= nodeentry$Streams
+    if(nodeentry$Stype != 'NTS Offtake')
+    {
+      return(return_list %>% data.frame %>% t)
+    }
+    return_list[['LDZ']] = nodeentry$LDZ
+    return_list[['Linear Model R2']] = Models[[as.name(nodeentry$Name)]]$r2
+    return_list[['Model Forumla']] = paste(as.character(formula(Models[[as.name(nodeentry$Name)]]$model)),collapse='')
+    return(return_list %>% data.frame %>% t)
+    
+    }
+    else{return(NULL)}
   })
-  
-  
-  
-  
   
   get_secondary_sel = reactive({
     

@@ -120,8 +120,9 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
           ,fluidRow(box(title = 'Site Selection',status = 'primary',width = 8,  DT::dataTableOutput('node_select')%>%withSpinner()) 
                 ,
                 box(title = 'Site Statistics',status= 'primary', width =4,  DT::dataTableOutput('node_info')%>%withSpinner()))
-                ,fluidRow(box(title = 'Grouped Sites',status = 'info', DT::dataTableOutput('secondary_sel') %>% withSpinner()))
-                
+                ,fluidRow(box(title = 'Grouped Sites',status = 'info', DT::dataTableOutput('secondary_sel') %>% withSpinner()),
+                          conditionalPanel('input.switch.exit && input.switch.entry',box(title = 'Node Info',status = 'info', DT::dataTableOutput('Q_info') %>% withSpinner()))
+                )        
                 )),
         
         ################################################### REPORTING ######################################
