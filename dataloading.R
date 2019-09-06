@@ -22,21 +22,21 @@ library(DT)
 library(readxl) 
 library(ukgasapi)
 library(tidyr)
-
 library(readr)
+#library(timeDate)
 library(xts)
 
 
 DL_ENABLE = FALSE ##prevent data updateing by setting FALSE
-aux_df <- read_csv("aux_df.csv")
-aux2 <- read_csv("aux2.csv", col_types = cols(X1 = col_skip()))
+aux2 <- read_csv("aux2.csv", col_types = cols(index = col_date(format = "%d/%m/%Y")))
+
 aux_xts = xts(data.frame(aux2[,-1]), order.by = aux2[[1]])
-colnames(aux_xts) = colnames(aux2)[-1]
+  colnames(aux_xts) = colnames(aux2)[-1]
 
 
-order_ldz = sapply(aux_df, function(x) {sub(".*LDZ(.*?) *).*", "\\1",x)})[3:15] %>% substring(2)
-LDZ_xts = aux_xts[,3:15]
-
+  order_ldz = c('EA', 'EM','NE', 'NO','WN','NW','SC','SE','SO','SW','WM','NT','WS')
+  LDZ_xts = aux_xts[,3:15]
+colnames(LDZ_xts) = order_ldz
 
 load('Models_R.Rdata')
 load('Models.Rdata')
@@ -192,6 +192,15 @@ xxts[is.na(xxts)] = 0
 
 #######
 
+ldzs = unique(dllist$LDZ)[-1]
+day_dummies = dummy_cols(format(index(xxts), '%A'))
+colnames(LDZ_xts) = order_ldz
+hols = format(index(apply.yearly(xxts, sum)),'%Y') %>% as.numeric%>% timeDate::holidayLONDON()
+day_dummiesx = xts(day_dummies[,-1], order.by =index(xxts))
+day_dummiesx$isHoliday = 0
+day_dummiesx$isHoliday[hols] = 1
+df = dllist[which(dllist$Stype == 'NTS Offtake'),]
+colnames(day_dummiesx) = c('Tuesday', 'Wednesday','Thursday','Friday','Saturday','Sunday','Monday','Holidays')
 
 
 u=0 #????

@@ -137,6 +137,12 @@ server <- function(input, output,session) {
     # 
     
     
+    get_LDZs = function(name,ldz)
+    {
+      LDZsums =  rowSums(xxts[,dllist[which(dllist$LDZ == ldz & dllist$Name != name),]$Name]) %>% as.numeric %>% xts(order.by = index(xxts))
+      colnames(LDZsums) = 'LDZ Sum'
+      return(LDZsums)
+    }
       
       
     
@@ -215,6 +221,7 @@ output$excess_u = renderValueBox({
     focusday2[['UAG']] <<- round(updatefilter()[input$ex_rows_selected,2]/1e6,2)
     focusday2[['ExcessUAG']] <<- round(abs(20-abs(round(updatefilter()[input$ex_rows_selected,2]/1000000,2))),2)
       
+    updateDateInput(session,'analysis_date',value =updatefilter()[input$ex_rows_selected,1] )
     
     
     tv =  updatefilter()[input$ex_rows_selected,2]
@@ -487,6 +494,7 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
     return_list[['LDZ']] = nodeentry$LDZ
     return_list[['Linear Model R2']] = Models[[as.name(nodeentry$Name)]]$r2
     return_list[['Model Forumla']] = paste(as.character(formula(Models[[as.name(nodeentry$Name)]]$model)),collapse='')
+    return_list[['Model Predicted']] = get_analytics()$lm[[as.name(nodeentry$Name)]]
     return(return_list %>% data.frame %>% t)
     
     }
@@ -556,17 +564,12 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
     }
       }
         )
-      shinyalert('Batch join Complete!','You can download the analysis in the day explorer', 'success')
+      shinyalert('Batch job Complete!','You can download the analysis in the day explorer', 'success')
       
       }
   }
   )
-  
-  vlm = observeEvent(input$node_select_rows_selected,{
-    
-    #selectCells(sel_prox,which(row.names(r)==get_analytics()$Table[input$node_select_rows_selected,]$Stype))
-    
-  }) 
+
 
   output$uag_prc <- renderValueBox({
 
@@ -719,6 +722,13 @@ last_up()
     
     date = input$analysis_date
     
+    if(date > end(getactive()[,input$inp2]) | date < start(getactive()[,input$inp2]))
+    {
+      shinyalert('Warning!','Date out of loaded DB range!')
+      updateDateInput(session,'analysis_date',value = end(getactive()[,input$inp2]))
+      return(0)
+    }
+    
     focusday2[['Date']] <<-  date
     focusday2[['UAG']] <<- round(getactive()[date,input$inp2]/1e6,2)
     focusday2[['ExcessUAG']] <<- round(abs(20-abs(round(getactive()[date,input$inp2]/1000000,2))),2)
@@ -787,9 +797,14 @@ last_up()
     withProgress(message = 'Processing Data', value = 0, {
       
       
-      
-      selection_size = length(input$flag_filter)+2
-      
+      if( !('All' %in% input$flag_filter))
+      {
+      selection_size = length(input$flag_filter)
+      }
+      else
+      {
+        selection_size = 6
+      }
       
       if('Interrupts' %in% input$flag_filter | 'All' %in% input$flag_filter)
       {
@@ -934,7 +949,73 @@ last_up()
             }
           })
           EXT_F$Low = e2
+        }
+      
+      
+      
+      if('LDZ LM' %in% input$flag_filter  | 'All' %in% input$flag_filter)
+      {incProgress(1/selection_size, message = paste("Calculating LDZ LM"))
+      
+        LDZLM <<-list()
+          e1 = sapply(ENT$Name, function(x){
+          
+     
+            return(0)
+          
+          
+        })
+        ENT_F$`LDZ LM` = e1
+        e2 = sapply(EXT$Name, function(x){
+          if(dllist[dllist$Name == x & dllist$Type == 'Demand',]$Stype != 'NTS Offtake')
+          {
+            return(0)
+          }
+        t1 = 1
+        t2 = 2
+          o = merge(xxts[get_analytics()$Date,x],day_dummiesx[get_analytics()$Date,], get_LDZs(x, dllist[dllist$Name == x & dllist$Type == 'Demand',]$LDZ)[get_analytics()$Date], LDZ_xts[get_analytics()$Date, dllist[dllist$Name == x & dllist$Type == 'Demand',]$LDZ]) 
+          
+           
+          colnames(o)[c(ncol(o),ncol(o)-1)]= c('LDZ Demand', 'LDZ Weather')
+          colnames(o)[1] = colnames(data.frame(o))[1]
+          required = colnames(Models[[as.name(x)]]$model$model)
+          p_data = o[get_analytics()$Date,required] %>% data.frame()
+          colnames(p_data) = required
+          k = predict.lm(Models[[as.name(x)]]$model,p_data, coverage = 0.95, interval = 'prediction')
+          if( k[,"lwr"] < 0)
+          {
+            k[,"lwr"] =0
+          }
+          if( k[,"fit"] < 0)
+          {
+            k[,"fit"] =0
+          }
+          if( k[,"upr"] < 0)
+          {
+            k[,"upr"] =0
+          }
+          LDZLM[[as.name(x)]] <<- k
+          
+          if(o[,1] == 0)
+          {
+            return(0)
+          }
+          if(o[,1] > k[,"upr"] | o[,1] < k[,"lwr"])
+          {
+            return(1)
+          }
+          else{
+            return(0)
+          }
+        })
+        EXT_F$`LDZ LM` = e2
+        
+        
       }
+      
+      
+      
+      
+      
       if('Extreme' %in% input$flag_filter  | 'All' %in% input$flag_filter)
       {incProgress(1/selection_size, message = paste("Calculating Extreme"))
         e1 = sapply(ENT$Name, function(x){
@@ -1028,7 +1109,7 @@ last_up()
       tgs =getentry()[c(1,-1) + get_analytics()$Date,x]
       nval = as.numeric(mean(tgs))
       val =getentry()[ get_analytics()$Date,x]
-      ug = updatefilter()[input$ex_rows_selected,2]
+      ug = val
       ug = ug + (nval-val)
       return(ug)
       
@@ -1039,7 +1120,7 @@ last_up()
       tgs =getexit()[c(1,-1) + get_analytics()$Date,x]
       nval = as.numeric(mean(tgs))
       val =getexit()[ get_analytics()$Date,x]
-      ug = updatefilter()[input$ex_rows_selected,2]
+      ug = val
       ug = ug - (nval-val)
       return(ug)
     })
@@ -1075,7 +1156,7 @@ last_up()
     FIN_T <<- FIN_Tl
   updateMaterialSwitch(session,'show_d_hack', TRUE)
   analytics_holder[[as.name(format(get_analytics()$Date))]]$Table <<- FIN_T
-
+  analytics_holder[[as.name(format(get_analytics()$Date))]]$lm <<- LDZLM
   }
   
   

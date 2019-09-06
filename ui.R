@@ -68,7 +68,7 @@ conditionalPanel(background = 'light-blue',"input.container === 'day_2'",hr(),di
   #materialSwitch(inputId = "atr_filter",value = FALSE,  label = "Display Overlay", status = "primary", right = TRUE),
 pickerInput(inputId = "flag_filter", label = 'Flags',
               
-              choices = c("Interrupts","Anomalies (Fast)","All",'Quantile','Extreme','Anomalies (Slow)'), multiple = TRUE, 
+              choices = c("All","Interrupts","Anomalies (Fast)",'Quantile','Extreme','Anomalies (Slow)', "LDZ LM"), multiple = TRUE, 
               selected = c("Interrupts",'Quantile','Extreme')),
 dateInput('analysis_date','Select Date',value = Sys.Date() -30)
 
