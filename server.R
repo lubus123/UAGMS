@@ -492,9 +492,13 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
       return(return_list %>% data.frame %>% t)
     }
     return_list[['LDZ']] = nodeentry$LDZ
+    
+    if('LDZ LM' %in% input$flag_filter)
+    {
     return_list[['Linear Model R2']] = Models[[as.name(nodeentry$Name)]]$r2
     return_list[['Model Forumla']] = paste(as.character(formula(Models[[as.name(nodeentry$Name)]]$model)),collapse='')
     return_list[['Model Predicted']] = get_analytics()$lm[[as.name(nodeentry$Name)]]
+    }
     return(return_list %>% data.frame %>% t)
     
     }
@@ -1156,7 +1160,10 @@ last_up()
     FIN_T <<- FIN_Tl
   updateMaterialSwitch(session,'show_d_hack', TRUE)
   analytics_holder[[as.name(format(get_analytics()$Date))]]$Table <<- FIN_T
+  if('LDZ LM' %in% input$flag_filter)
+  {
   analytics_holder[[as.name(format(get_analytics()$Date))]]$lm <<- LDZLM
+  }
   }
   
   
@@ -1808,29 +1815,63 @@ get_e_chart = reactive({
   
 
   updatebutton = observeEvent(input$syncbutton,{
+    error <<- 0
+    error_list <<- list()
     shinyjs::disable('syncbutton')
     withProgress(message = 'Updating Shrinkage', value = 0, {
       # Number of times we'll go through the loop
-      
-      downloaduag()
+      incProgress(0.25, message = paste("Updating Shrinkage"))
+      tryCatch({
+        
+        downloaduag()}, error = function(e){
+          error<<-1
+          error_list[['Shrinkage']] <<- as.character(e)}
+      )
       processuag()
       
       
-      incProgress(0.33, message = paste("Updating Demand"))
+      incProgress(0.25, message = paste("Updating Demand"))
       rnames = c('Shrinkage', 'Entry', 'Exit')
        lp = last_up()
      lp[,2] =as.character(Sys.Date())
       last_up(lp)
       
       
-      updatexitDB()
-      incProgress(0.33, message = paste("Updating Supply"))
-      updatentryDB()
+      tryCatch({
+        
+        updatexitDB()}, error = function(e){
+          error<<-1
+          error_list[['Exit']] <<- as.character(e)}
+      )
+      incProgress(0.25, message = paste("Updating Supply"))
+      tryCatch({
+      
+        updatentryDB()}, error = function(e){
+         error<<-1
+         error_list[['Supply']] <<- as.character(e)}
+      )
+      
+      incProgress(0.25, message = paste("Updating Auxillary DB"))
+      tryCatch({
+        
+        updateauxDB()}, error = function(e){
+          error<<-1
+          error_list[['Aux']] <<- as.character(e)}
+      )
       shinyjs::enable('syncbutton')
       updateDateRangeInput(session, 'dateRange', start = input$dateRange[1], end = end(getactive()))
-      write.csv(last_up(), file = 'last_update.csv', row.names = FALSE)
       
+      
+      
+      
+      write.csv(last_up(), file = 'last_update.csv', row.names = FALSE)
+      if(error==0)
+      {
       shinyalert("Update complete", "Databases are now synced.", type = "success")
+      }
+      else{
+        shinyalert("Update completed with errors", as.character(error_list), type = "error")
+      }
     })
   })
   

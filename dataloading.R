@@ -28,15 +28,8 @@ library(xts)
 
 
 DL_ENABLE = FALSE ##prevent data updateing by setting FALSE
-aux2 <- read_csv("aux2.csv", col_types = cols(index = col_date(format = "%d/%m/%Y")))
+aux2 <- read_csv("aux2.csv")
 
-aux_xts = xts(data.frame(aux2[,-1]), order.by = aux2[[1]])
-  colnames(aux_xts) = colnames(aux2)[-1]
-
-
-  order_ldz = c('EA', 'EM','NE', 'NO','WN','NW','SC','SE','SO','SW','WM','NT','WS')
-  LDZ_xts = aux_xts[,3:15]
-colnames(LDZ_xts) = order_ldz
 
 load('Models_R.Rdata')
 load('Models.Rdata')
@@ -75,10 +68,29 @@ entrym <- read_csv("entrym.csv", col_types = cols("ApplicableFor" = col_date(for
 
 
 updateauxDB = function(){
+  last = end(aux_xts)
+  if(Sys.Date() - 3 - last > 0)
+  {
+    entry =getbig(colnames(aux2[-1]),last -30,Sys.Date()-4, 2000)
+    entry = entry %>% select(ApplicableFor,Value,PublicationObjectName)
+    entry = unique(entry)
+    entry = spread(entry, PublicationObjectName,Value)
+  if(ncol(entry) != ncol(aux2))
+  {
+    shinyalert('Error!', 'AUX DB update error: data conformity. Try again later.', type = 'warning')
+    return(0)
+  }
+    colnames(entry)[1]= 'index'
+    entry = entry[,colnames(aux2)]
+  
+    entryd = rbind(aux2, entry)
+   ## entryd[is.na(entryd)]= 0
+    entryd = unique(entryd)
+    write.csv(entryd, 'aux2.csv' , row.names=FALSE)
+    init_aux_df()
   
   
-  
-  
+  }
 }
 
 
@@ -140,7 +152,7 @@ updatentryDB = function(){
   }
   
   
-  last =entrym$ApplicableFor[nrow(entrym)]+1
+  last =entrym$ApplicableFor[nrow(entrym)] ## removed -1 
   if(Sys.Date() - 60 - last > 0)
   {
     entry =getbig(dl_s$Vname,last ,Sys.Date()-60, 2000)
@@ -192,6 +204,17 @@ xxts[is.na(xxts)] = 0
 
 #######
 
+init_aux_df= function()
+{
+
+aux_xts = xts(data.frame(aux2[,-1]), order.by = aux2[[1]])
+colnames(aux_xts) = colnames(aux2)[-1]
+
+
+order_ldz = c('EA', 'EM','NE', 'NO','WN','NW','SC','SE','SO','SW','WM','NT','WS')
+LDZ_xts = aux_xts[,3:15]
+colnames(LDZ_xts) = order_ldz
+
 ldzs = unique(dllist$LDZ)[-1]
 day_dummies = dummy_cols(format(index(xxts), '%A'))
 colnames(LDZ_xts) = order_ldz
@@ -201,7 +224,8 @@ day_dummiesx$isHoliday = 0
 day_dummiesx$isHoliday[hols] = 1
 df = dllist[which(dllist$Stype == 'NTS Offtake'),]
 colnames(day_dummiesx) = c('Tuesday', 'Wednesday','Thursday','Friday','Saturday','Sunday','Monday','Holidays')
-
+}
+init_aux_df()
 
 u=0 #????
 uagloaded = FALSE #?????
