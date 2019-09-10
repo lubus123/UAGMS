@@ -68,8 +68,8 @@ conditionalPanel(background = 'light-blue',"input.container === 'day_2'",hr(),di
   #materialSwitch(inputId = "atr_filter",value = FALSE,  label = "Display Overlay", status = "primary", right = TRUE),
 pickerInput(inputId = "flag_filter", label = 'Flags',
               
-              choices = c("All","Interrupts","Anomalies (Fast)",'Quantile','Extreme','Anomalies (Slow)', "LDZ LM"), multiple = TRUE, 
-              selected = c("Interrupts",'Quantile','Extreme')),
+              choices = c("All","Interrupts","Anomalies (Fast)",'Quantile','Percentage Change', 'Extreme','Anomalies (Slow)', "LDZ LM"), multiple = TRUE, 
+              selected = c("Interrupts",'Quantile','Extreme')), conditionalPanel('input.flag_filter.includes("Percentage Change") ', sliderInput('p_c_control', 'Absolute Percentage', 1, 100, 50)),
 dateInput('analysis_date','Select Date',value = Sys.Date() -30)
 
         ,div(actionBttn('calculate_anom','Calculate',block=TRUE, style = 'fill'),style="width: 87%; float:left")

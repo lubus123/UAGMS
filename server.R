@@ -875,46 +875,7 @@ last_up()
         })
         EXT_F$Anomaly_F = e2
       }
-      if('Quantile' %in% input$flag_filter  | 'All' %in% input$flag_filter)
-      {
-        incProgress(1/selection_size, message = paste("Calculating Quantile"))
-        e1 = sapply(ENT$Name, function(x){
-          
-          tgs =getentry()[,x]
-          if(sum(tgs[tgs>0]) <1 | tgs[get_analytics()$Date] ==0 )
-          {
-            return(0)
-          }
-          valQ = ecdf(as.numeric(tgs[tgs>0]))(tgs[get_analytics()$Date])
-          if(tgs[get_analytics()$Date] != 0 & (valQ>0.95) )
-          {
-            return(1)
-          }
-          else{
-            return(0)
-          }
-          
-        })
-        ENT_F$High = e1
-        e2 = sapply(EXT$Name, function(x){
-          
-          tgs =getexit()[,x]
-          if(sum(tgs[tgs>0]) <1 | tgs[get_analytics()$Date])
-          {
-            return(0)
-          }
-          valQ = ecdf(as.numeric(tgs[tgs>0]))(tgs[get_analytics()$Date])
-          if(tgs[get_analytics()$Date] != 0 & (valQ>0.95) )
-          {
-            return(1)
-          }
-          else{
-            return(0)
-          }
-        })
-        EXT_F$High = e2
-        
-      }
+     
         if('Quantile' %in% input$flag_filter  | 'All' %in% input$flag_filter)
         {
          
@@ -1016,8 +977,41 @@ last_up()
         
       }
       
-      
-      
+      p_c = input$p_c_control
+        
+      if('Percentage Change' %in% input$flag_filter  | 'All' %in% input$flag_filter)
+      {incProgress(1/selection_size, message = paste("Calculating Extreme"))
+        e1 = sapply(ENT$Name, function(x){
+          
+          tgs =getentry()[c(-1,0) +get_analytics()$Date,x] %>% as.numeric
+          if(tgs[1] == 0){ return(0)}
+          pc= abs((tgs[2]-tgs[1])/tgs[1])
+          if(pc>p_c/100)
+          {
+            return(1)
+          }
+          else{
+            return(0)
+          }
+          
+        })
+        ENT_F$`% Change` = e1
+        e2 = sapply(EXT$Name, function(x){
+          tgs =getexit()[c(-1,0) +get_analytics()$Date,x] %>% as.numeric
+          if(tgs[1] == 0){ return(0)}
+          pc= abs((tgs[2]-tgs[1])/tgs[1])
+          if(pc>p_c/100)
+          {
+            return(1)
+          }
+          else{
+            return(0)
+          }
+        })
+        EXT_F$`% Change` = e2
+        
+        
+      }
       
       
       if('Extreme' %in% input$flag_filter  | 'All' %in% input$flag_filter)
