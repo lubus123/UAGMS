@@ -69,9 +69,9 @@ entrym <- read_csv("entrym.csv", col_types = cols("ApplicableFor" = col_date(for
 
 updateauxDB = function(){
   last = end(aux_xts)
-  if(Sys.Date() - 3 - last > 0)
+  if(Sys.Date() - 4 - last > 0)
   {
-    entry =getbig(colnames(aux2[-1]),last -30,Sys.Date()-4, 2000)
+    entry =getbig(colnames(aux2[-1]),last -40,Sys.Date()-4, 2000)
     entry = entry %>% select(ApplicableFor,Value,PublicationObjectName)
     entry = unique(entry)
     entry = spread(entry, PublicationObjectName,Value)
@@ -87,7 +87,10 @@ updateauxDB = function(){
    ## entryd[is.na(entryd)]= 0
     entryd = unique(entryd)
     write.csv(entryd, 'aux2.csv' , row.names=FALSE)
-    init_aux_df()
+ 
+    
+    
+    
   
   
   }
@@ -204,8 +207,7 @@ xxts[is.na(xxts)] = 0
 
 #######
 
-init_aux_df= function()
-{
+
 
 aux_xts = xts(data.frame(aux2[,-1]), order.by = aux2[[1]])
 colnames(aux_xts) = colnames(aux2)[-1]
@@ -224,8 +226,7 @@ day_dummiesx$isHoliday = 0
 day_dummiesx$isHoliday[hols] = 1
 df = dllist[which(dllist$Stype == 'NTS Offtake'),]
 colnames(day_dummiesx) = c('Tuesday', 'Wednesday','Thursday','Friday','Saturday','Sunday','Monday','Holidays')
-}
-init_aux_df()
+
 
 u=0 #????
 uagloaded = FALSE #?????

@@ -36,6 +36,7 @@ suppressMessages(library(forecast))
 library(timetk)
 library(tibbletime)
 library(anomalize)
+jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
 server <- function(input, output,session) {
   show_d<<- 0
   focusday2= list()
@@ -180,6 +181,8 @@ server <- function(input, output,session) {
   get_analytics = reactiveVal({
     0
   })
+  
+ 
   
   output$day_i = renderValueBox({valueBox(get_analytics()$Date,
                                           "Date", icon = icon("question"),
@@ -411,9 +414,24 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
   
   output$node_info =DT::renderDataTable({
 
-    get_node_info()}, options = list(dom = 't')
+    get_node_info()}, options = list(dom = 't'), rownames = FALSE
   )
  
+  output$Flag_summary = DT::renderDataTable({
+    a=1
+    a=2
+    tt = get_analytics()$Table$Flags
+    tt[tt==''] = 'None'
+    ttt= table(tt)
+    df = data.frame(as.numeric(ttt),row.names =  names(ttt))
+    colnames(df)= 'Flag Count'
+    return(df)
+    
+    
+    
+  },
+                                            options = list(dom= 't'))
+  
   
     get_node_info= reactive({
      
@@ -437,8 +455,8 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
       tval = getexit()[get_analytics()$Date,get_analytics()$Table[input$node_select_rows_selected,]$Name]
      
     }
-    percentage_online_total=round(sum(wkv>0)/ length(wkv),2)
-    percentage_online_historic=round(sum(wkv[(length(wkv)-30):length(wkv)]>0)/ 30,2)
+    percentage_online_total=round(sum(wkv>0)/ length(wkv) *100,2)/100
+    percentage_online_historic=round(sum(wkv[(length(wkv)-30):length(wkv)]>0)/ 30 *100,2)/100
     node_sd = sd(wkv[wkv>0])/1e6
       node_nz_mean=mean(wkv[wkv!=0])/1e6
       node_max=max(wkv)/1e6
@@ -474,7 +492,7 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
   }  )
   
   
-  output$Q_info = DT::renderDataTable(get_qualitative_info(), options = list(dom = 't'))
+  output$Q_info = DT::renderDataTable(get_qualitative_info(),colnames = c(''), options = list(dom = 't'))
   
   get_qualitative_info = reactive({ ##### structure (Trend/ Season )
     a=2
@@ -1868,7 +1886,7 @@ get_e_chart = reactive({
       }
     })
   })
-  
+
   getPage<-function() {
     return(includeHTML("userguide.html"))
   }
