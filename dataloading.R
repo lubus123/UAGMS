@@ -19,7 +19,7 @@ library(shinycssloaders)
 library(tsoutliers)
 library(shinydashboard)
 library(DT)
-library(readxl) 
+library(readxl)
 library(ukgasapi)
 library(tidyr)
 library(readr)
@@ -31,7 +31,7 @@ DL_ENABLE = FALSE ##prevent data updateing by setting FALSE
 aux2 <- read_csv("aux2.csv")
 
 
-load('Models_R.Rdata')
+#load('Models_R.Rdata')
 load('Models.Rdata')
 
 

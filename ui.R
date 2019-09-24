@@ -8,29 +8,24 @@ library(shiny)
 library(readxl)
 library(shinyalert)
 library(shinyWidgets)
-library(xts)
-library(dplyr)
-library(stringr)
-library(changepoint)
+
 library(readr)
 library(dygraphs)
-library(ecp)
-library(bcp)
+
 library(shinyjs)
 library(shinycssloaders)
 library(echarts4r)
 
-library(tsoutliers)
 library(shinydashboard)
-library(qcc)
+
 header <- dashboardHeader(title = tags$a(href='http://nationalgrid.com',
                                     tags$img(src='nglogo.jpg',height='60',width='220')))
 
 #tags$head(tags$link(rel="shortcut icon", href="https://ibb.co/p3ChdZP"))
 
 sidebar <- dashboardSidebar(sidebarMenu(id = 'container',
-  menuItem("UAG Monitor", tabName = "uag_monitor", icon = icon("bar-chart")),
-  menuItem("DayExplorer", tabName = "day_2", icon = icon("calendar"))
+  menuItem("UAG Baseline", tabName = "uag_monitor", icon = icon("bar-chart")),
+  menuItem("Causality Detection", tabName = "day_2", icon = icon("calendar"))
 ,
 
   menuItem("Changepoint Analysis", tabName = "cpt_tab", icon = icon("bar-chart")),
@@ -46,7 +41,7 @@ conditionalPanel("input.container === 'uag_monitor'",hr(),div(style="text-align:
 ), 
   pickerInput(inputId = "analchoice", 
               label = "Filtration", 
-              choices = c("Bollinger Bands","Fixed Limit", "D'Arpino(2014)",'Anomalize','ETS Forecast'), multiple = TRUE, 
+              choices = c("Bollinger Bands","Fixed Limit","% Throughput", "D'Arpino(2014)",'Anomalize','ETS Forecast'), multiple = TRUE, 
               selected = "Fixed Limit"), hidden(materialSwitch(inputId = "show_d_hack2",value = TRUE,  label = "Display Overlay", 
                                                                 status = "primary", right = TRUE)),
 switchInput('mode_op_uag',label =  'Limits', value = TRUE, onLabel = 'Min', offLabel = 'Max', width = '150px'),
@@ -54,6 +49,9 @@ conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Bollinger Band
 
 conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Fixed Limit') ", sliderInput('gwh_lim_l','Lower Limit:' , min = -50, max = -0.5, step = 0.5, value = -20) ),
 conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Fixed Limit') ", sliderInput('gwh_lim_u','Upper Limit:' , min = 0.5, max = 50, step = 0.5, value = 20) ),
+conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('% Throughput') ",
+                 switchInput('switch_throughput_calc',label =  'Throughput', value = TRUE, onLabel = 'Supply', offLabel = 'Demand', width = '150px'),
+                 sliderInput('throughput_control','Percentage Throughput' , min = 0.005, max = 0.1, step =0.005, value = 0.03) ),
 div(
 actionBttn('action','Explore Day',style='fill',block = TRUE),style="width: 87%; float:left"),div(
   actionBttn('batch','Batch Analysis',style='fill',block = TRUE),style="width: 87%; float:left"),br(), br(), br(),br(),hr(), div(style="text-align:center",class= "h5","Aggregate UAG")
@@ -121,7 +119,7 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                 ,
                 box(title = 'Summary',status= 'primary', width =4,div(align="center",h4('Total Flags')), DT::dataTableOutput('Flag_summary'),div(align="center",h4('Site Statistics')),
                     DT::dataTableOutput('node_info'),
-                    conditionalPanel('input.switch.exit && input.switch.entry', div(align="center",h4('Site Info')), 
+                    conditionalPanel('input.switch_exit && input.switch_entry', div(align="center",h4('Site Info')), 
                                      DT::dataTableOutput('Q_info')) )
                   ,fluidRow(box(title = 'Grouped Sites',
                                                     status = 'info', DT::dataTableOutput('secondary_sel') %>% withSpinner()))
@@ -171,7 +169,7 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                 fluidRow(valueBoxOutput("uag_prc"),valueBoxOutput("uag_num"),valueBoxOutput("uag_t")),
             fluidRow(
                   box(title = 'Daily UAG',status = 'primary',echarts4rOutput("echartsu"), width = NULL)),fluidRow(
-     box(title = 'UAG days exceeding limits',width = NULL,status = 'primary',
+     box(height = '540px', title = 'UAG days exceeding limits',width = NULL,status = 'primary',
                                DT::dataTableOutput('ex'))), fluidRow(box(title = 'Aggregate UAG',status  = 'info',width = NULL, echarts4rOutput('aggregate'))))
                  
                  

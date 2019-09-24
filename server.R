@@ -15,6 +15,7 @@ library(tinytex)
 library(xts)
 library(fastDummies)
 library(dplyr)
+library(DT)
 library(purrr)
 library(stringr)
 library(changepoint)
@@ -36,7 +37,7 @@ suppressMessages(library(forecast))
 library(timetk)
 library(tibbletime)
 library(anomalize)
-jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
+#jsResetCode <- "shinyjs.reset = function() {history.go(0)}"
 server <- function(input, output,session) {
   show_d<<- 0
   focusday2= list()
@@ -80,11 +81,7 @@ server <- function(input, output,session) {
   
   
   
-  r = getOption("repos")
-  r["CRAN"] = "http://cran.us.r-project.org"
-  options(repos = r)
-  
-  
+
   source('functions.R') ## Functions used throughout
   source('download.R') ## Download function
   source('dataloading.R') ## data initialisation
@@ -160,8 +157,8 @@ server <- function(input, output,session) {
     
     if(firstb)
     {
-      hide("loading_page")
-      show("main_content",anim = TRUE, animType = "fade", time = 1)
+      shinyjs::hide("loading_page")
+      shinyjs::show("main_content",anim = TRUE, animType = "fade", time = 1)
       firstb = FALSE
       
       upd_lim  = 7
@@ -1391,6 +1388,24 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
       uppers = cbind(uppers, positive)
       lowers = cbind(lowers, negative)
     }
+    
+    if("% Throughput" %in% input$analchoice)
+       
+      {
+      if(input$switch_throughput_calc)
+      {
+        basis =  rowSums(getentry()[selected,])
+      }
+      else{
+        basis =  rowSums(getexit()[selected,])
+      }
+     uppers = cbind(uppers, basis*input$throughput_control)
+      lowers = cbind(lowers, -basis*input$throughput_control)
+      
+    }
+    
+    
+    
     if("Anomalize" %in% input$analchoice)
     {
       
