@@ -25,9 +25,8 @@ header <- dashboardHeader(title = tags$a(href='http://nationalgrid.com',
 
 sidebar <- dashboardSidebar(sidebarMenu(id = 'container',
   menuItem("UAG Baseline", tabName = "uag_monitor", icon = icon("bar-chart")),
-  menuItem("Causality Detection", tabName = "day_2", icon = icon("calendar"))
-,
-
+  menuItem("Causality Detection", tabName = "day_2", icon = icon("calendar")),
+  menuItem("LDZ Weather", tabName = "weather", icon = icon("sun")),
   menuItem("Changepoint Analysis", tabName = "cpt_tab", icon = icon("bar-chart")),
 menuItem('Reporting', tabName = 'reporting', icon = icon('book')),
   menuItem("Data Configuration", tabName = "data_config", icon = icon("file-excel-o")),
@@ -58,7 +57,23 @@ actionBttn('action','Explore Day',style='fill',block = TRUE),style="width: 87%; 
 ,pickerInput('aggregate_function', 'Aggregate Function', choices = c('Sum', 'Abs Sum'), selected = 'Sum'),
 pickerInput('aggregate_time', 'Aggregate Level', choices = c('Weekly', 'Monthly','Quarterly', 'Yearly'), selected = 'monthly')
 ),
+################## LDZ VIEW SIDEBAR #####################
 
+
+
+
+
+
+conditionalPanel(background = 'light-blue',"input.container === 'weather'",hr(),div(style="text-align:center",class= "h3","Options"),
+                 pickerInput('LDZ_pick', 'LDZ', unique(dllist$LDZ)[-1]),
+                 pickerInput('Offtake_pick', 'Offtake', dllist[dllist$Stype=='NTS Offtake',]$Name, options = list(
+                   `live-search` = TRUE,  size =10)	), dateInput('Date_weather', 'Date', '2019-01-01')
+                 
+                 
+                 
+                 
+                 
+                 ),
 ###################### DAY EXPLORER SIDEBAR ########################
 
 
@@ -161,6 +176,14 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                                                                                                                                                                                                            'Version Alpha , build ',br(),'For Queries, contact lubomir.botev@manchester.ac.uk',
                                                                                                                                                                                                            br(), 'Analytics performed in  R (GPL-2 | GPL-3)', br(), 'Developed at the University of Manchester',br(),tags$img(src='mcrlogo.jpg',height='60',width='160'),br(),'2019')))
                 )),
+        
+        ################################## WEATHER/ LDZ/ LM ####################################
+        tabItem(tabName = 'weather',fluidRow(),
+                
+                fluidRow(box('Weather','primary',width = 6,echarts4rOutput("LDZ_W")),box('LDZ Sum', 'primary', width = 6,echarts4rOutput("LDZ_TOT"))),
+                fluidRow(box('Node','primary', width = 12, echarts4rOutput('Node_LDZ')))
+                
+        ),
         
         ################################################### UAG MONITOR ######################################
         

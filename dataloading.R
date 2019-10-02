@@ -28,15 +28,34 @@ library(xts)
 
 
 DL_ENABLE = FALSE ##prevent data updateing by setting FALSE
+
+
+
+####################### LOAD FROM EXTERNAL SOURCE##################
+
+
+withProgress(message = 'Loading data: GIS', value = 0, {
+  pipe = readOGR('.', 'pipedata')
+  incProgress(0.25, 'Loading Data: Aux')
 aux2 <- read_csv("aux2.csv")
+dllist <- read_csv("dl_keys_xlsx.csv") #relational and qualitative node DB
 
 
 #load('Models_R.Rdata')
+incProgress(0.25, 'Loading Data: Model')
+
 load('Models.Rdata')
+incProgress(0.2, 'Loading Data: Node')
+entryd<- read_csv("entryd.csv", col_types = cols("ApplicableFor" = col_date(format = "%Y-%m-%d")))
+exit <- read_csv("exit.csv", col_types = cols("ApplicableFor" = col_date(format = "%Y-%m-%d")))
+entrym <- read_csv("entrym.csv", col_types = cols("ApplicableFor" = col_date(format = "%Y-%m-%d")))
 
 
 
 last_update <<-(read_csv("last_update.csv", col_types = cols(`Last Updated` = col_character())))
+
+incProgress(0.2, 'Processing')
+##################### FINISH LOAD#####
 
 processuag = function(){  ## UAG Loading function
   ttx <<- NULL
@@ -54,16 +73,11 @@ processuag = function(){  ## UAG Loading function
 processuag() ##  Load UAG
 
 
-dllist <- read_csv("dl_keys_xlsx.csv") #relational and qualitative node DB
 dl_s= dllist %>% filter(Type == 'Supplies')
 dl_d= dllist %>% filter(Type == 'Demand')
 
 
 ##read node flow data##
-entryd<- read_csv("entryd.csv", col_types = cols("ApplicableFor" = col_date(format = "%Y-%m-%d")))
-exit <- read_csv("exit.csv", col_types = cols("ApplicableFor" = col_date(format = "%Y-%m-%d")))
-entrym <- read_csv("entrym.csv", col_types = cols("ApplicableFor" = col_date(format = "%Y-%m-%d")))
-
 
 
 
@@ -230,4 +244,4 @@ colnames(day_dummiesx) = c('Tuesday', 'Wednesday','Thursday','Friday','Saturday'
 
 u=0 #????
 uagloaded = FALSE #?????
-
+})

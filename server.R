@@ -94,7 +94,7 @@ server <- function(input, output,session) {
     cols[idx] <- col.value
     hist(x, col=cols, ...)
   }
-   pipe = readOGR('.', 'pipedata')
+   
     
     iconSet = pulseIconList(
       red = makePulseIcon(color = "#ff0000",heartbeat = 1),
@@ -141,7 +141,13 @@ server <- function(input, output,session) {
       colnames(LDZsums) = 'LDZ Sum'
       return(LDZsums)
     }
-      
+    get_LDZs2 = function(ldz)
+    {
+      LDZsums =  rowSums(xxts[,dllist[which(dllist$LDZ == ldz),]$Name]) %>% as.numeric %>% xts(order.by = index(xxts))
+      colnames(LDZsums) = 'LDZ'
+      return(LDZsums)
+    }
+    
       
     
  
@@ -519,6 +525,10 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
     }
     else{return(NULL)}
   })
+  
+  
+  
+  
   
   get_secondary_sel = reactive({
     
@@ -1766,6 +1776,67 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
       
     }
   )
+  
+  ## LDZ WEATHER ## 
+  
+  output$LDZ_W = renderEcharts4r({
+
+    data = LDZ_xts[,input$LDZ_pick] %>% tk_tbl
+    o= colnames(data)
+
+    e_plot= data%>% e_charts_(o[1],dispose = FALSE) %>% e_tooltip() %>%
+      e_y_axis(name='Degrees C') %>% e_line_(o[2])%>%
+      e_datazoom(x_index = 0,toolbox = FALSE,start = list(90), type = 'slider', minSpan = list('5'), bottom = list('0'), show = FALSE) %>% e_group('mcharts')
+
+  })
+  output$LDZ_TOT = renderEcharts4r({
+    
+    data = get_LDZs2(input$LDZ_pick)['2014-06-12/'] %>% tk_tbl
+    o= colnames(data)
+    e_plot= data%>% e_charts_(o[1],dispose = FALSE) %>% e_tooltip() %>% e_y_axis(name='Energy(KWh)') %>% e_line_(o[2])%>%e_datazoom(start = list(90),x_index = 0,show = FALSE,toolbox = FALSE, type = 'slider', minSpan = list('5'), bottom = list('0')) %>% 
+     e_group('mcharts') 
+  })
+  
+  output$Node_LDZ = renderEcharts4r({
+    a=1
+    a=2
+    data= xxts[,input$Offtake_pick]['2014-06-12/'] 
+    x=input$Offtake_pick
+    o = merge(xxts[,x],day_dummiesx[], get_LDZs(x, dllist[dllist$Name == x & dllist$Type == 'Demand',]$LDZ), LDZ_xts[, dllist[dllist$Name == x & dllist$Type == 'Demand',]$LDZ]) 
+    
+    
+    colnames(o)[c(ncol(o),ncol(o)-1)]= c('LDZ Demand', 'LDZ Weather')
+    colnames(o)[1] = colnames(data.frame(o))[1]
+    required = colnames(Models[[as.name(x)]]$model$model)
+    o = o[index(data)]
+    o=o[-which(duplicated(index(o))),] ## WHAT IS CAUSING THIS??? %todo
+    p_data = o[,required] %>% data.frame()
+    colnames(p_data) = required
+    k = predict.lm(Models[[as.name(x)]]$model,p_data, coverage = 0.95, interval = 'prediction')
+   k[k<0] = 0
+    k = xts(k, order.by = as.Date(rownames(k)))
+    data = merge(data, k)
+    data = data %>% tk_tbl
+    
+    colnames(data)[2] = word( colnames(data)[2],1)
+    o= colnames(data)
+    e_plot= data%>% e_charts_(o[1],dispose = FALSE) %>% e_tooltip() %>% e_y_axis(name='Energy(KWh)') %>%
+      e_line_(o[2]) %>%
+      e_line_(o[3],symbol = 'none',lineStyle= list(width =list(1),color=list('rgb(0,300,0'))) %>% 
+      e_line_(o[4],symbol = 'none',lineStyle= list(width =list(1),color=list('rgb(0,0,1'))) %>% 
+      e_line_(o[5],symbol = 'none',lineStyle= list(width =list(1),color=list('rgb(300,0,0')))%>%e_datazoom(x_index = 0,toolbox = FALSE, type = 'slider', start = list(90),minSpan = list('5'), bottom = list('0')) %>% 
+      e_group('mcharts') %>% e_connect_group('mcharts')
+    
+  })
+  
+  observeEvent(input$Offtake_pick,{
+    a=1
+    a=2
+    x=input$Offtake_pick
+   l= dllist[dllist$Name == x & dllist$Type == 'Demand',]$LDZ
+   updatePickerInput(session, 'LDZ_pick', selected = l)
+  })
+  
   ############################# UAG PLOT #######################################
   
 get_e_chart = reactive({
