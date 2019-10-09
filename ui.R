@@ -18,6 +18,8 @@ library(echarts4r)
 
 library(shinydashboard)
 
+
+
 header <- dashboardHeader(title = tags$a(href='http://nationalgrid.com',
                                     tags$img(src='nglogo.jpg',height='60',width='220')))
 
@@ -65,16 +67,17 @@ pickerInput('aggregate_time', 'Aggregate Level', choices = c('Weekly', 'Monthly'
 
 
 conditionalPanel(background = 'light-blue',"input.container === 'weather'",hr(),div(style="text-align:center",class= "h3","Options"),
-                 pickerInput('LDZ_pick', 'LDZ', unique(dllist$LDZ)[-1]),
-                 pickerInput('Offtake_pick', 'Offtake', dllist[dllist$Stype=='NTS Offtake',]$Name, options = list(
-                   `live-search` = TRUE,  size =10)	), dateInput('Date_weather', 'Date', '2019-01-01')
-                 
+                 pickerInput('LDZ_pick', 'LDZ',''),
+                 pickerInput('Offtake_pick', 'Offtake', '', options = list(
+                   `live-search` = TRUE,  size =10)	), dateInput('Date_weather', 'Date', '2019-01-01') ,
+                 materialSwitch('mark_model','Highlight Points', value = FALSE) , 
+                 materialSwitch('advanced_model','Detailed Model Info', value = FALSE) 
                  
                  
                  
                  
                  ),
-###################### DAY EXPLORER SIDEBAR ########################
+###################### causality SIDEBAR ########################
 
 
 conditionalPanel(background = 'light-blue',"input.container === 'day_2'",hr(),div(style="text-align:center",class= "h3","Options"),
@@ -89,7 +92,7 @@ dateInput('analysis_date','Select Date',value = Sys.Date() -30)
   , br(),br(),hr(),  pickerInput(inputId = 'past_analis', label = 'Analysis List', choices=c('No Analysis')),
 conditionalPanel("!input.past_analis.includes('No Analysis')",
 div( downloadBttn('download_analyis','Download Analysis',block=TRUE, style = 'fill'),style="width: 87%; float:left")
-)
+),div( uiOutput('to_weather'),style="width: 87%; float:left")
 
 
 )
@@ -178,10 +181,12 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                 )),
         
         ################################## WEATHER/ LDZ/ LM ####################################
-        tabItem(tabName = 'weather',fluidRow(),
+        tabItem(tabName = 'weather',
+                #fluidRow(infoBoxOutput('Modelfit'), valueBoxOutput('R2'), infoBoxOutput('Filler')),
                 
-                fluidRow(box('Weather','primary',width = 6,echarts4rOutput("LDZ_W")),box('LDZ Sum', 'primary', width = 6,echarts4rOutput("LDZ_TOT"))),
-                fluidRow(box('Node','primary', width = 12, echarts4rOutput('Node_LDZ')))
+                fluidRow(box('Weather',status="primary",width = 6,echarts4rOutput("LDZ_W")),box('LDZ Aggregate', status= 'primary', width = 6,echarts4rOutput("LDZ_TOT"))),
+                fluidRow(box('Node',status="primary", width = 12, echarts4rOutput('Node_LDZ'))),
+                fluidRow(box('LM Stats',status= "primary", width = 6, DT::dataTableOutput('LM_info'),verbatimTextOutput('ADVANCED_INFO')),box('Correlation',status= "primary", width = 6, DT::dataTableOutput('Node_correlation')))
                 
         ),
         

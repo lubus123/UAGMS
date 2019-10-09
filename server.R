@@ -86,6 +86,9 @@ server <- function(input, output,session) {
   source('download.R') ## Download function
   source('dataloading.R') ## data initialisation
   
+  updatePickerInput(session,'LDZ_pick', choices =  unique(dllist$LDZ)[-1], selected = 'SO')
+  updatePickerInput(session,'Offtake_pick',choices =  dllist[dllist$Stype=='NTS Offtake',]$Name, selected = 'Aberdeen Offtake')
+  
   
   highlight <- function(x, value, col.value, col=NA, ...){
     hst <- hist(x, ...)
@@ -186,6 +189,13 @@ server <- function(input, output,session) {
   })
   
  
+  #output$Modelfit = renderInfoBox(infoBox('Fit','Poor'))
+  
+  
+  ##output$R2 = renderValueBox({valueBox(Models[[as.name(input$Offtake_pick)]]$r2, 'R2')})
+  
+  
+  
   
   output$day_i = renderValueBox({valueBox(get_analytics()$Date,
                                           "Date", icon = icon("question"),
@@ -388,11 +398,6 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
     }
   )
   output$node_select = DT::renderDataTable({
-    
-  print('Requsting FINT')
-    #get_nodes_smp()
-    a=1
-    a=2
     get_analytics()$Table
     
   },selection = list(mode ='single', selected = 1), filter = list(position = "bottom")) 
@@ -962,7 +967,9 @@ last_up()
           }
         t1 = 1
         t2 = 2
-          o = merge(xxts[get_analytics()$Date,x],day_dummiesx[get_analytics()$Date,], get_LDZs(x, dllist[dllist$Name == x & dllist$Type == 'Demand',]$LDZ)[get_analytics()$Date], LDZ_xts[get_analytics()$Date, dllist[dllist$Name == x & dllist$Type == 'Demand',]$LDZ]) 
+          o = merge(xxts[get_analytics()$Date,x],day_dummiesx[get_analytics()$Date,], 
+                    get_LDZs(x, dllist[dllist$Name == x & dllist$Type == 'Demand',]$LDZ)[get_analytics()$Date], 
+                    LDZ_xts[get_analytics()$Date, dllist[dllist$Name == x & dllist$Type == 'Demand',]$LDZ]) 
           
            
           colnames(o)[c(ncol(o),ncol(o)-1)]= c('LDZ Demand', 'LDZ Weather')
@@ -971,18 +978,7 @@ last_up()
           p_data = o[get_analytics()$Date,required] %>% data.frame()
           colnames(p_data) = required
           k = predict.lm(Models[[as.name(x)]]$model,p_data, coverage = 0.95, interval = 'prediction')
-          if( k[,"lwr"] < 0)
-          {
-            k[,"lwr"] =0
-          }
-          if( k[,"fit"] < 0)
-          {
-            k[,"fit"] =0
-          }
-          if( k[,"upr"] < 0)
-          {
-            k[,"upr"] =0
-          }
+          k[k<0] = 0
           LDZLM[[as.name(x)]] <<- k
           
           if(o[,1] == 0)
@@ -1530,6 +1526,7 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
     
   })
    
+   
  
   output$ex = DT::renderDataTable(
     
@@ -1543,7 +1540,7 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
    return( updatefilter())
       
       
-    }, selection=  list(mode='single'),options = list(scrollX = TRUE)
+    }, selection=  list(mode='single'),options = list(scrollX = TRUE,lengthChange = FALSE)
     )
   dp = dataTableProxy('ex')
   sel_prox = dataTableProxy('secondary_sel')
@@ -1778,29 +1775,107 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
   )
   
   ## LDZ WEATHER ## 
+  output$ADVANCED_INFO = renderPrint({
+    if(input$advanced_model){
+   return( summary( Models[[as.name(input$Offtake_pick)]]$model))}})
+  
+  output$LM_info = DT::renderDataTable({
+    return_list = list()
+    
+     m = Models[[as.name(input$Offtake_pick)]]$r2
+     if(m< 0.4){return_list[['Model Fit']] = 'Terrible' }
+     if(m>0.4 & m <0.6){return_list[['Model Fit']] = 'Poor' }
+     if(m>0.6 & m <0.75){return_list[['Model Fit']] = 'Fair' }
+     if(m>0.75 & m <0.85){return_list[['Model Fit']] = 'Good' }
+     if(m>0.85){return_list[['Model Fit']] = 'Excellent' }
+    return_list[['Linear Model R2']] = m 
+    return_list[['Model Forumla']] = paste(as.character(formula(Models[[as.name(input$Offtake_pick)]]$model)),collapse='')
+    
+    
+    
+    
+  return_list %>% as_tibble%>% t},colnames = c(''), options = list(dom = 't'))
+  
+  output$to_weather = renderUI({
+    
+ if(is.numeric(get_analytics())){ return()}
+    if(length(input$node_select_rows_selected) ==0 ){return()}
+    if(get_analytics()$Table[input$node_select_rows_selected,]$Stype == 'NTS Offtake'){return(actionBttn('weather_click','Inspect Offtake',block=TRUE, style = 'fill'))}})
+  
+  observeEvent(input$weather_click,  {
+    
+    updateTabItems(session, 'container','weather')
+    updatePickerInput(session, 'Offtake_pick', selected = get_analytics()$Table[input$node_select_rows_selected,]$Name)
+    #now need to highlight day
+    updateDateInput(session,'Date_weather', value = get_analytics()$Date)
+    })
+  
+  observeEvent(input$Date_weather,{
+    #SELECT IN GRAPHS
+    
+    
+  })
   
   output$LDZ_W = renderEcharts4r({
-
-    data = LDZ_xts[,input$LDZ_pick] %>% tk_tbl
+d1 = LDZ_xts[,input$LDZ_pick]
+d1$highlight = NA
+d1$highlight[c(-1,0,1)+input$Date_weather] = d1[c(-1,0,1)+input$Date_weather,1]
+    data = d1%>% tk_tbl
     o= colnames(data)
-
-    e_plot= data%>% e_charts_(o[1],dispose = FALSE) %>% e_tooltip() %>%
-      e_y_axis(name='Degrees C') %>% e_line_(o[2])%>%
-      e_datazoom(x_index = 0,toolbox = FALSE,start = list(90), type = 'slider', minSpan = list('5'), bottom = list('0'), show = FALSE) %>% e_group('mcharts')
-
-  })
+    if(input$mark_model){e_plot= data%>% e_charts_(o[1],dispose = FALSE)}
+    else{e_plot= data%>% e_charts_(o[1],dispose = TRUE)}
+    e_plot= e_plot %>% e_tooltip() %>%
+      e_y_axis(name='Degrees C') %>% e_line_(o[2], symbol = 'none')%>% e_line_(o[3],symbolSize = '8', symbol = 'circle') %>%e_legend(show = FALSE) %>%
+      e_datazoom(x_index = 0,toolbox = FALSE,
+                 startValue =(input$Date_weather-15),endValue = (input$Date_weather+15),minSpan = list('2'), type = 'slider', bottom = list('0'), show = FALSE) %>% e_group('mcharts')
+    
+    xAxis = as.Date(input$Date_weather)
+    yAxis = as.numeric(d1[xAxis,1])
+    value = as.numeric(round( d1[xAxis,1],1))
+    l =list(xAxis =xAxis,yAxis = yAxis,value= value)
+    if(input$mark_model){
+    e_plot = e_plot %>% e_mark_point(o[3], data = l)
+    }
+    e_plot
+     })
   output$LDZ_TOT = renderEcharts4r({
     
-    data = get_LDZs2(input$LDZ_pick)['2014-06-12/'] %>% tk_tbl
+    data = get_LDZs2(input$LDZ_pick)['2014-06-12/'] 
+    xm = xxts[,input$Offtake_pick]['2014-06-12/']
+    
+   
+    data$highlight = NA
+    data$highlight[c(-1,0,1)+input$Date_weather] = data[c(-1,0,1)+input$Date_weather,1]
+    xAxis = input$Date_weather
+    yAxis = as.numeric(data[xAxis,2])
+    value = as.numeric(round( data[xAxis,2],1))
+    l =list(xAxis =xAxis,yAxis = yAxis,value= value)
+    data = merge(data,xm) %>% tk_tbl
     o= colnames(data)
-    e_plot= data%>% e_charts_(o[1],dispose = FALSE) %>% e_tooltip() %>% e_y_axis(name='Energy(KWh)') %>% e_line_(o[2])%>%e_datazoom(start = list(90),x_index = 0,show = FALSE,toolbox = FALSE, type = 'slider', minSpan = list('5'), bottom = list('0')) %>% 
+    if(input$mark_model){e_plot= data%>% e_charts_(o[1],dispose = FALSE)}
+    else{e_plot= data%>% e_charts_(o[1],dispose = TRUE)}
+    e_plot= e_plot%>% e_legend(show = FALSE) %>% 
+      e_tooltip() %>% e_y_axis(name='Energy(KWh)') %>% e_area_(o[2], symbol = 'none')%>% e_line_(o[3],symbolSize = '8', symbol = 'circle')%>% e_area_(o[4], symbol = 'none')%>%
+      e_datazoom(startValue =(input$Date_weather-15),endValue = (input$Date_weather+15),x_index = 0,show = FALSE,toolbox = FALSE, type = 'slider', minSpan = list('5'), bottom = list('0')) %>% 
      e_group('mcharts') 
+    
+    if(input$mark_model){
+      e_plot = e_plot %>% e_mark_point(o[3], data = l)
+    }
+   
+    e_plot
+    
   })
   
   output$Node_LDZ = renderEcharts4r({
     a=1
     a=2
     data= xxts[,input$Offtake_pick]['2014-06-12/'] 
+    xAxis = input$Date_weather
+    yAxis = as.numeric(data[xAxis])
+    value = as.numeric(round( data[xAxis],1))
+    l =list(xAxis =xAxis,yAxis = yAxis,value= value)
+    
     x=input$Offtake_pick
     o = merge(xxts[,x],day_dummiesx[], get_LDZs(x, dllist[dllist$Name == x & dllist$Type == 'Demand',]$LDZ), LDZ_xts[, dllist[dllist$Name == x & dllist$Type == 'Demand',]$LDZ]) 
     
@@ -1809,34 +1884,58 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
     colnames(o)[1] = colnames(data.frame(o))[1]
     required = colnames(Models[[as.name(x)]]$model$model)
     o = o[index(data)]
-    o=o[-which(duplicated(index(o))),] ## WHAT IS CAUSING THIS??? %todo
+    #o=o[-which(duplicated(index(o))),] ## WHAT IS CAUSING THIS??? %todo
     p_data = o[,required] %>% data.frame()
     colnames(p_data) = required
     k = predict.lm(Models[[as.name(x)]]$model,p_data, coverage = 0.95, interval = 'prediction')
    k[k<0] = 0
     k = xts(k, order.by = as.Date(rownames(k)))
     data = merge(data, k)
+    
+    data$highlight = NA
+    data$highlight[c(-1,0,1)+input$Date_weather] = data[c(-1,0,1)+input$Date_weather,1]
     data = data %>% tk_tbl
     
     colnames(data)[2] = word( colnames(data)[2],1)
     o= colnames(data)
-    e_plot= data%>% e_charts_(o[1],dispose = FALSE) %>% e_tooltip() %>% e_y_axis(name='Energy(KWh)') %>%
+    if(input$mark_model){e_plot= data%>% e_charts_(o[1],dispose = FALSE)}
+    else{e_plot= data%>% e_charts_(o[1],dispose = TRUE)}
+    
+    
+    
+    e_plot=e_plot %>% e_tooltip() %>% e_y_axis(name='Energy(KWh)') %>%
       e_line_(o[2]) %>%
-      e_line_(o[3],symbol = 'none',lineStyle= list(width =list(1),color=list('rgb(0,300,0'))) %>% 
-      e_line_(o[4],symbol = 'none',lineStyle= list(width =list(1),color=list('rgb(0,0,1'))) %>% 
-      e_line_(o[5],symbol = 'none',lineStyle= list(width =list(1),color=list('rgb(300,0,0')))%>%e_datazoom(x_index = 0,toolbox = FALSE, type = 'slider', start = list(90),minSpan = list('5'), bottom = list('0')) %>% 
+      e_line_(o[6],symbolSize = '8', symbol = 'circle') %>%
+      e_line_(o[3],symbol = 'none',lineStyle= list(width =list(1))) %>% 
+      e_line_(o[4],symbol = 'none',lineStyle= list(width =list(1))) %>% 
+      e_line_(o[5],symbol = 'none',lineStyle= list(width =list(1)))%>%e_datazoom(x_index = 0,toolbox = FALSE, type = 'slider', startValue =(input$Date_weather)-15,endValue = (input$Date_weather+15),minSpan = list('2'), bottom = list('0')) %>% 
       e_group('mcharts') %>% e_connect_group('mcharts')
+    if(input$mark_model){
+    e_plot = e_plot %>% e_mark_point(o[6], data = l)
+   
+    }
+    e_plot
+  })
+  
+  output$Node_correlation = DT::renderDataTable({
+    xmin = xxts[,dllist[dllist$LDZ == dllist[dllist$Name == input$Offtake_pick & dllist$Type == 'Demand',]$LDZ,]$Name]
+    tb_cr = round(cor(xmin)[,input$Offtake_pick],2)
+    p_change = xmin[c(-1,0)+input$Date_weather,]
+    p_change = (as.numeric(p_change[2,])-as.numeric(p_change[1,]))/as.numeric(p_change[1,])
+    tibble('Name' = names(xmin),'Correlation'= tb_cr,'Perc. Change' = round(p_change,2))
+    
     
   })
   
   observeEvent(input$Offtake_pick,{
-    a=1
-    a=2
     x=input$Offtake_pick
    l= dllist[dllist$Name == x & dllist$Type == 'Demand',]$LDZ
    updatePickerInput(session, 'LDZ_pick', selected = l)
   })
   
+  
+  
+
   ############################# UAG PLOT #######################################
   
 get_e_chart = reactive({

@@ -41,6 +41,8 @@ aux2 <- read_csv("aux2.csv")
 dllist <- read_csv("dl_keys_xlsx.csv") #relational and qualitative node DB
 
 
+
+
 #load('Models_R.Rdata')
 incProgress(0.25, 'Loading Data: Model')
 
@@ -229,6 +231,7 @@ colnames(aux_xts) = colnames(aux2)[-1]
 
 order_ldz = c('EA', 'EM','NE', 'NO','WN','NW','SC','SE','SO','SW','WM','NT','WS')
 LDZ_xts = aux_xts[,3:15]
+LDZ_xts<- LDZ_xts[ ! duplicated( index(LDZ_xts), fromLast = TRUE ),  ]
 colnames(LDZ_xts) = order_ldz
 
 ldzs = unique(dllist$LDZ)[-1]
