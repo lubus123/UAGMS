@@ -46,8 +46,9 @@ conditionalPanel("input.container === 'uag_monitor'",hr(),div(style="text-align:
               selected = "Fixed Limit"), hidden(materialSwitch(inputId = "show_d_hack2",value = TRUE,  label = "Display Overlay", 
                                                                 status = "primary", right = TRUE)),
 switchInput('mode_op_uag',label =  'Limits', value = TRUE, onLabel = 'Min', offLabel = 'Max', width = '150px'),
-conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Bollinger Bands')",sliderInput('bol_sd','Bollinger Band s.d.', min = 0.5,max=5,step = 0.25,value = 2) ),
-
+conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Bollinger Bands')",sliderInput('bol_sd','Bollinger Band s.d.', min = 0.5,max=5,step = 0.25,value = 2),
+                 sliderInput('bol_w','Bollinger Band width', min = 5,max=150,step = 1,value = 30) ),
+conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('ETS Forecast')",sliderInput('ets_level','Prediction Interval %', min = 50,max=99,step = 1,value = 95)),
 conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Fixed Limit') ", sliderInput('gwh_lim_l','Lower Limit:' , min = -50, max = -0.5, step = 0.5, value = -20) ),
 conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('Fixed Limit') ", sliderInput('gwh_lim_u','Upper Limit:' , min = 0.5, max = 50, step = 0.5, value = 20) ),
 conditionalPanel("input.show_d_hack2 &&input.analchoice.includes('% Throughput') ",
@@ -77,6 +78,17 @@ conditionalPanel(background = 'light-blue',"input.container === 'weather'",hr(),
                  
                  
                  ),
+
+
+conditionalPanel(background = 'light-blue',"input.container === 'cpt_tab'",hr(),div(style="text-align:center",class= "h3","Options"), 
+selectInput('cpt_MODE','Changepoint Method:',c('PELT (Recommended)','Bin Seg (Allows control)')),sliderInput('control_cpt3', 'Binseg Max Changepoints', 1, 20, 5),
+sliderInput('control_cpt2', 'BCP p0', 0, 1, 0.2),sliderInput('control_cpt', 'CUSUM SD Shift', 0.3, 3, 1)
+                
+                 
+                 
+),
+
+
 ###################### causality SIDEBAR ########################
 
 
@@ -208,7 +220,7 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                 
                 fluidRow(box(title = 'Bayesian changepoint analysis', plotOutput('bcp')%>%withSpinner()), box(title = 'Cumulative sum control chart', plotOutput('tso')%>%withSpinner()))
                 ,
-                fluidRow(box(title = 'Changepoint Plot', (plotOutput('cpt_output')%>%withSpinner())),box(title = 'Summary', tableOutput('Locations'),textOutput('sumr'), selectInput('cpt_MODE','Changepoint Method:',c('PELT (Recommended)','Bin Seg (Allows control)')),sliderInput('control_cpt3', 'Binseg Max Changepoints', 1, 20, 5), sliderInput('control_cpt2', 'BCP p0', 0, 1, 0.2),sliderInput('control_cpt', 'CUSUM SD Shift', 0.3, 3, 1)))
+                fluidRow(box(title = 'Changepoint Plot', (plotOutput('cpt_output')%>%withSpinner())),box(title = 'Summary', tableOutput('Locations'),textOutput('sumr')))
                 
         ),
      
@@ -234,8 +246,8 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                 ),
                 fluidRow(
                   column(4, box(title= 'UAG/Shrinkage Source', width = NULL, 
-                                materialSwitch(inputId = "id",value = TRUE,  label = "Use Online Data", 
-                                               status = "primary", right = TRUE),
+                               
+                                switchInput('id',label =  'Source', value = TRUE, onLabel = 'Online', offLabel = 'Custom', width = '150px'),
                                 conditionalPanel(
                                   ### report hidden here##
                                   condition = "!input.id",selectInput('inp2','Select Column',c('UAG')),
@@ -248,9 +260,9 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                                 )
                   )
                   ),
-                  column(4,  box(title= 'Entry Source', width = NULL, 
-                                 materialSwitch(inputId = "switch_entry",value = TRUE,  label = "Use Online Data", 
-                                                status = "primary", right = TRUE),
+                  column(4,  box(title= 'Entry Source ', width = NULL, 
+                                
+                                 switchInput('switch_entry',label =  'Source', value = TRUE, onLabel = 'MIPI', offLabel = 'Custom'),
                                  conditionalPanel(
                                    condition = "!input.switch_entry",
                                    fileInput("file_entry", "Choose Exit Node .csv File",
@@ -263,8 +275,7 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                   )
                   ),
                   column(4,  box(title= 'Exit Source', width = NULL, 
-                                 materialSwitch(inputId = "switch_exit",value = TRUE,  label = "Use Online Data", 
-                                                status = "primary", right = TRUE),
+                                 switchInput('switch_exit',label =  'Source', value = TRUE, onLabel = 'MIPI', offLabel = 'Custom'),
                                  conditionalPanel(
                                    condition = "!input.switch_exit",
                                    fileInput("file_exit", "Choose UAG .csv File",

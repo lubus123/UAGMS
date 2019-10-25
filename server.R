@@ -947,6 +947,50 @@ last_up()
         }
       
       
+      if('Quantile' %in% input$flag_filter  | 'All' %in% input$flag_filter)
+      {
+        
+        e1 = sapply(ENT$Name, function(x){
+          
+          tgs =getentry()[,x]
+          if(sum(tgs[tgs>0]) <1 | tgs[get_analytics()$Date] ==0 )
+          {
+            return(0)
+          }
+          valQ = ecdf(as.numeric(tgs[tgs>0]))(tgs[get_analytics()$Date])
+          if(tgs[get_analytics()$Date] != 0 & (valQ >0.95 ) )
+          {
+            return(1)
+          }
+          else{
+            return(0)
+          }
+          
+        })
+        ENT_F$High = e1
+        e2 = sapply(EXT$Name, function(x){
+          
+          tgs =getexit()[,x]
+          if(sum(tgs[tgs>0]) <1 | tgs[get_analytics()$Date])
+          {
+            return(0)
+          }
+          valQ = ecdf(as.numeric(tgs[tgs>0]))(tgs[get_analytics()$Date])
+          if(tgs[get_analytics()$Date] != 0 & (valQ >0.95 ) )
+          {
+            return(1)
+          }
+          else{
+            return(0)
+          }
+        })
+        EXT_F$High = e2
+      }
+      
+      
+      
+      
+      
       
       if('LDZ LM' %in% input$flag_filter  | 'All' %in% input$flag_filter)
       {incProgress(1/selection_size, message = paste("Calculating LDZ LM"))
@@ -1371,7 +1415,7 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
     lowers =rep(-200000000, length = length(pp))
     
     
-    w = 30
+    w = input$bol_w
     ma = rollapply(as.numeric(getactive()[seq(from = input$dateRange[1]-w+1, to = input$dateRange[2], by = 'day'),input$inp2]), width = w, mean)
     sds= rollapply(as.numeric(getactive()[seq(from = input$dateRange[1]-w+1, to = input$dateRange[2], by = 'day'),input$inp2]), width =w,sd)
     pbb = ma+input$bol_sd*sds
@@ -1453,20 +1497,20 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
       p=cbind(0,0)
       for(i in 1:length(se))
       {
-        f=suppressMessages(forecast(ets(as.ts(getactive()[max(se[1]-width,1):se[i],input$inp2]),model),h=1))
-        p=rbind(p,cbind(f$lower[,2],f$upper[,2]))
+        f=suppressMessages(forecast(ets(as.ts(getactive()[max(se[1]-width,1):se[i],input$inp2]),model),h=1, level = c(input$ets_level)))
+        p=rbind(p,cbind(f$lower[,1],f$upper[,1]))
       }
       p=p[-1,]
     f=p
-      uppers = cbind(uppers,f[,2])
-      lowers = cbind(lowers,f[,1])  
+      uppers = cbind(uppers,f[,1])
+      lowers = cbind(lowers,f[,2])  
       #Now need selected band.
     }
     if("D'Arpino(2014)" %in% input$analchoice)
     {
       
       r = 0.15 #Set the system correlation
-      u_demand = 0.03 #demand side relative uncertainty
+      u_demand = 0.01 #demand side relative uncertainty
       u_supply = 0.01 #supply side relative uncertainty
       
       supplyside = apply(getentry()[selected], 1, function(x) { sum(x>0)}) #supply side number of active nodes per day  
@@ -1512,7 +1556,7 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
       
     }
     
-    df = data.frame(selected[1:length(pp)], pp, upper, lower,ma)
+    df = data.frame(selected[1:length(pp)], round(pp,2), upper, lower,ma)
     
     
     colnames(df) = c('Date', input$inp2, 'Upper', 'Lower', 'Mean')
