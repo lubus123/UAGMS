@@ -236,7 +236,7 @@ body <- dashboardBody(  useShinyalert(),tags$head(tags$script(HTML('
                          ,
                          
                          box(title = 'Synchronisation', status = 'info', width = 5,p('Entry/Exit Data is sourced from the MIPI. Shrinkage from NG website'),
-                             tableOutput('sync_table'),actionButton('syncbutton', "Sync")
+                             tableOutput('sync_table'),actionButton('syncbutton', "Sync"), hidden( numericInput( inputId = 'refresh_helper',label='sd', value = 0 ) ),switchInput('sw_new', label = 'Auto-Update', value = FALSE, onLabel = 'Yes', offLabel = 'No', width = '150px')
                              
                              
                              

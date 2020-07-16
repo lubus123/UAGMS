@@ -64,9 +64,9 @@ processuag = function(){
   tt$'Gas Day' = as.Date(tt$'Gas Day', format = '%d/%m/%Y')
   tt  = tt[,1:5]
    tt = na.omit(tt)
-  ttx = xts(tt[,2:5], order.by = tt$'Gas Day')
+  ttx = xts(tt[,c(2,4,5)], order.by = tt$'Gas Day')
   ttx[is.na(ttx)] <- 0
-  colnames(ttx) = c('UAG', 'OUG', 'CV Sh.', 'Total Shrinkage')
+  colnames(ttx) = c('UAG', 'OUG', 'CV Sh.')
   return(ttx)
 }
 getuag= function()
@@ -75,19 +75,16 @@ getuag= function()
   return(processuag())
 }
 
-downloaduag = function(){
-  url = 'https://www.nationalgrid.com/uk/gas/balancing/unaccounted-gas-uag'
+downloaduag=function(){
+  url = 'https://www.nationalgrid.com/uk/gas-transmission/balancing/unaccounted-gas-uag'
   t =read_html(url) %>%
     html_nodes("a") %>%       # find all links
     html_attr("href")%>% # get the url
-    str_subset("node") 
-  t=t[2]# look at the first one
+    str_subset("daily") 
+  t=t[1]# look at the first one
   destfile <- "uag.xlsx"
   curl::curl_download(t, destfile)
 }
-
-
-
 
 
 

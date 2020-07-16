@@ -53,6 +53,122 @@ server <- function(input, output,session) {
      
       return(ttx)
     }}
+  
+  
+  update_function = function(){
+    error <<- 0
+    error_list <<- list()
+    shinyjs::disable('syncbutton')
+    withProgress(message = 'Updating Shrinkage', value = 0, {
+      # Number of times we'll go through the loop
+      incProgress(0.25, message = paste("Updating Shrinkage"))
+      tryCatch({
+        
+        downloaduag()}, error = function(e){
+          error<<-1
+          error_list[['Shrinkage']] <<- as.character(e)}
+      )
+      processuag()
+      
+      
+      incProgress(0.25, message = paste("Updating Demand"))
+      rnames = c('Shrinkage', 'Entry', 'Exit')
+      lp = last_up()
+      lp[,2] =as.character(Sys.Date())
+      last_up(lp)
+      
+      
+      tryCatch({
+        
+        updatexitDB()}, error = function(e){
+          error<<-1
+          error_list[['Exit']] <<- as.character(e)}
+      )
+      incProgress(0.25, message = paste("Updating Supply"))
+      tryCatch({
+        
+        updatentryDB()}, error = function(e){
+          error<<-1
+          error_list[['Supply']] <<- as.character(e)}
+      )
+      
+      incProgress(0.25, message = paste("Updating Auxillary DB"))
+      tryCatch({
+        
+        updateauxDB()}, error = function(e){
+          error<<-1
+          error_list[['Aux']] <<- as.character(e)}
+      )
+      shinyjs::enable('syncbutton')
+      updateDateRangeInput(session, 'dateRange', start = input$dateRange[1], end = end(getactive()))
+      
+      
+      
+      
+      write.csv(last_up(), file = 'last_update.csv', row.names = FALSE)
+      if(error==0)
+      {
+        shinyalert("Update complete", "Databases are now synced.", type = "success")
+      }
+      else{
+        shinyalert("Update completed with errors", as.character(error_list), type = "error")
+      }
+    })
+  }
+  update_function_basic = function(){
+    error <<- 0
+    error_list <<- list()
+
+    withProgress(message = 'Updating Shrinkage', value = 0, {
+      # Number of times we'll go through the loop
+      incProgress(0.25, message = paste("Updating Shrinkage"))
+      tryCatch({
+        
+        downloaduag()}, error = function(e){
+          error<<-1
+          error_list[['Shrinkage']] <<- as.character(e)}
+      )
+      processuag()
+      
+      
+      incProgress(0.25, message = paste("Updating Demand"))
+      rnames = c('Shrinkage', 'Entry', 'Exit')
+ 
+      
+      tryCatch({
+        
+        updatexitDB()}, error = function(e){
+          error<<-1
+          error_list[['Exit']] <<- as.character(e)}
+      )
+      incProgress(0.25, message = paste("Updating Supply"))
+      tryCatch({
+        
+        updatentryDB()}, error = function(e){
+          error<<-1
+          error_list[['Supply']] <<- as.character(e)}
+      )
+      
+      incProgress(0.25, message = paste("Updating Auxillary DB"))
+      tryCatch({
+        
+        updateauxDB()}, error = function(e){
+          error<<-1
+          error_list[['Aux']] <<- as.character(e)}
+      )
+    
+      
+      
+      if(error==0)
+      {
+        shinyalert("Update complete", "Databases are now synced.", type = "success")
+      }
+      else{
+        shinyalert("Update completed with errors", as.character(error_list), type = "error")
+      }
+    })
+  }
+  
   output$display_day = renderText({
    
     return(show_d)})
@@ -85,11 +201,15 @@ server <- function(input, output,session) {
   source('functions.R') ## Functions used throughout
   source('download.R') ## Download function
   source('dataloading.R') ## data initialisation
-  
+
   updatePickerInput(session,'LDZ_pick', choices =  unique(dllist$LDZ)[-1], selected = 'SO')
   updatePickerInput(session,'Offtake_pick',choices =  dllist[dllist$Stype=='NTS Offtake',]$Name, selected = 'Aberdeen Offtake')
-  
-  
+  if(read.csv('auto-update.csv')[1,2])
+  {
+    updateSwitchInput(session, 'sw_new', TRUE)
+    update_function_basic()
+  }
+
   highlight <- function(x, value, col.value, col=NA, ...){
     hst <- hist(x, ...)
     idx <- findInterval(value, hst$breaks)
@@ -125,7 +245,9 @@ server <- function(input, output,session) {
       }
     })
     
-    
+    observeEvent(input$sw_new,{
+      write.csv(input$sw_new,'auto-update.csv')
+    })
     
     # ,  labelOptions=labelOptions(noHide = TRUE, textOnly = TRUE,style = list(
     #   "overflow" = "hidden",
@@ -2056,66 +2178,11 @@ get_e_chart = reactive({
   
 
   updatebutton = observeEvent(input$syncbutton,{
-    error <<- 0
-    error_list <<- list()
-    shinyjs::disable('syncbutton')
-    withProgress(message = 'Updating Shrinkage', value = 0, {
-      # Number of times we'll go through the loop
-      incProgress(0.25, message = paste("Updating Shrinkage"))
-      tryCatch({
-        
-        downloaduag()}, error = function(e){
-          error<<-1
-          error_list[['Shrinkage']] <<- as.character(e)}
-      )
-      processuag()
-      
-      
-      incProgress(0.25, message = paste("Updating Demand"))
-      rnames = c('Shrinkage', 'Entry', 'Exit')
-       lp = last_up()
-     lp[,2] =as.character(Sys.Date())
-      last_up(lp)
-      
-      
-      tryCatch({
-        
-        updatexitDB()}, error = function(e){
-          error<<-1
-          error_list[['Exit']] <<- as.character(e)}
-      )
-      incProgress(0.25, message = paste("Updating Supply"))
-      tryCatch({
-      
-        updatentryDB()}, error = function(e){
-         error<<-1
-         error_list[['Supply']] <<- as.character(e)}
-      )
-      
-      incProgress(0.25, message = paste("Updating Auxillary DB"))
-      tryCatch({
-        
-        updateauxDB()}, error = function(e){
-          error<<-1
-          error_list[['Aux']] <<- as.character(e)}
-      )
-      shinyjs::enable('syncbutton')
-      updateDateRangeInput(session, 'dateRange', start = input$dateRange[1], end = end(getactive()))
-      
-      
-      
-      
-      write.csv(last_up(), file = 'last_update.csv', row.names = FALSE)
-      if(error==0)
-      {
-      shinyalert("Update complete", "Databases are now synced.", type = "success")
-      }
-      else{
-        shinyalert("Update completed with errors", as.character(error_list), type = "error")
-      }
-    })
+   update_function()
   })
 
+
+  
   getPage<-function() {
     return(includeHTML("userguide.html"))
   }
