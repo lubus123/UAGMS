@@ -17,6 +17,7 @@ library(fastDummies)
 library(dplyr)
 library(DT)
 library(purrr)
+library(cpm)
 library(stringr)
 library(changepoint)
 library(readr)
@@ -755,7 +756,7 @@ updatePickerInput(session, 'past_analis',choices=(names(analytics_holder)), sele
   output$uag_num <- renderValueBox({
 
     valueBox(countupOutput('c_2')
-      ,"Days over threshold", icon = icon("list"),
+      ,"Days Over Threshold", icon = icon("list"),
       color = 'light-blue')
   })
   
@@ -1336,8 +1337,8 @@ last_up()
     FIN_Tl$Flags = Flags
 
     FIN_Tl$`Energy (GWh)` = round(total_daily/1e6,2)
-    FIN_Tl$`Rec. UAG (GWh)` = round(UAG_R/1e6,2)
-    FIN_Tl = FIN_Tl %>% arrange(desc(Flags),desc(`Rec. UAG (GWh)`))
+    FIN_Tl$`Predicted UAG (GWh)` = round(UAG_R/1e6,2)
+    FIN_Tl = FIN_Tl %>% arrange(desc(Flags),desc(`Predicted UAG (GWh)`))
     FIN_T <<- FIN_Tl
   updateMaterialSwitch(session,'show_d_hack', TRUE)
   analytics_holder[[as.name(format(get_analytics()$Date))]]$Table <<- FIN_T
@@ -1376,7 +1377,7 @@ last_up()
 updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], end = input$dateRange_reporting[2])
     if('Daily Balancing Errors' %in% input$report_choices  | 'All' %in% input$report_choices )
     {
-    updatePickerInput(session,'analchoice', selected = c("Bollinger Bands","Fixed Limit", "D'Arpino(2014)",'Anomalize','ETS Forecast') )
+    updatePickerInput(session,'analchoice', selected = c("Bollinger Bands","Fixed Limit", "Meter Error Model 1",'Anomalize','ETS Forecast','ARIMA','Composite Model 1') )
 }
 
     output$downloadData<<-downloadHandler(
@@ -1419,6 +1420,12 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
     return(cusum(d, title = 'Cumulative sum control chart', se.shift = input$control_cpt))
   }) 
   
+  CPM = reactive({
+    d=   getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2]
+    return(cusum(d, title = 'Cumulative sum control chart', se.shift = input$control_cpt))
+  }) 
+  
+  
   d = reactive({
     if(!(input$cpt_MODE == 'PELT (Recommended)'))
     {
@@ -1432,8 +1439,25 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
   })
   
   bc = reactive({
-    d=   as.numeric(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2])
-    return(bcp(d,p0 = input$control_cpt2))
+    
+    dpartial =   as.numeric(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2])
+    dfull =  as.numeric(getactive()[,input$inp2])
+    
+    cptobj = processStream(dfull, input$control_cpt2,input$control_cpt4)
+    
+    dates = index(getactive()[,input$inp2])[cptobj$changePoints]
+    
+    
+    f = data.frame(Date = seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'), UAG = dpartial)
+    
+    g= ggplot(f, aes(x=Date, y=UAG)) +geom_line()
+    if(sum(dates>input$dateRange[1]))
+    {
+     g=g + geom_vline(xintercept=dates[dates>input$dateRange[1]], linetype="dashed", color = "red")
+    }
+    
+    
+    return(g)
   })
   
   output$bcp = renderPlot({plot(bc())})
@@ -1458,7 +1482,22 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
 
   output$Locations = renderTable({
     f = d()
-    dff=  data.frame(Location = index(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2])[f@cpts], Means = paste(round(f@param.est$mean/1000000,2),'GWh'))
+    dff=  data.frame(Date = index(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2])[f@cpts], Means = paste(round(f@param.est$mean/1000000,2),'GWh'))
+    dff[,1] =sapply(dff[,1], as.character)
+    dff
+  })
+  
+  
+  output$Locations_2 = renderTable({
+    dpartial =   as.numeric(getactive()[seq(from = input$dateRange[1], to = input$dateRange[2], by = 'day'),input$inp2])
+    dfull =  as.numeric(getactive()[,input$inp2])
+    
+    cptobj = processStream(dfull, input$control_cpt2,input$control_cpt4)
+    
+    dates = index(getactive()[,input$inp2])[cptobj$changePoints]
+    
+
+    dff=  data.frame(Date = dates[dates> input$dateRange[1]])
     dff[,1] =sapply(dff[,1], as.character)
     dff
   })
@@ -1624,11 +1663,50 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
       }
       p=p[-1,]
     f=p
-      uppers = cbind(uppers,f[,1])
-      lowers = cbind(lowers,f[,2])  
+      uppers = cbind(uppers,f[,2])
+      lowers = cbind(lowers,f[,1])  
       #Now need selected band.
     }
-    if("D'Arpino(2014)" %in% input$analchoice)
+    if("ARIMA" %in% input$analchoice)
+    {
+      width = 600
+      se= which(index(getactive()) %in%selected)
+      # f =rollapply(as.ts(getactive()[,input$inp2]),se, align='right',function(x){ f=forecast(ets(x),h=1)
+      #return(cbind(f$lower[,2],f$upper[,2]))})
+      model = auto.arima(as.ts(getactive()[max(se[1]-width,1):se[1],input$inp2]))
+      p=cbind(0,0)
+      for(i in 1:length(se))
+      {
+        f=suppressMessages(forecast(Arima(as.ts(getactive()[max(se[1]-width,1):se[i],input$inp2]),model= model),h=1, level = c(input$ets_level)))
+        p=rbind(p,cbind(f$lower[,1],f$upper[,1]))
+      }
+      p=p[-1,]
+      f=p
+      uppers = cbind(uppers,f[,2])
+      lowers = cbind(lowers,f[,1])  
+      #Now need selected band.
+    }
+  
+  if('Composite Model 1' %in% input$analchoice)
+  {
+    r = 0.15 #Set the system correlation
+    u_demand = 0.01 #demand side relative uncertainty
+    u_supply = 0.01 #supply side relative uncertainty
+    
+    supplyside = apply(getentry()[selected], 1, function(x) { sum(x>0)}) #supply side number of active nodes per day  
+    demandside = apply(getexit()[selected], 1, function(x) { sum(x>0)}) # demand side number of active nodes per day 
+    
+    f = function(x,y){sqrt(1/x + y*(x-1)/x)}
+    
+    mods = f(supplyside, r)
+    modd = f(demandside,r )
+    cint =  mods*u_supply*(rowSums(getentry()[selected])) + modd*u_demand*(rowSums(getexit()[selected]))
+    cint[is.nan(cint)] = 2e8
+    uppers = cbind(uppers, cint) + rowSums(getentry()[selected])*0.000018 
+    lowers = cbind(lowers, -cint)- rowSums(getentry()[selected])*0.000018
+    
+  }
+    if("Meter Error Model 1" %in% input$analchoice)
     {
       
       r = 0.15 #Set the system correlation
@@ -1666,14 +1744,22 @@ updateDateRangeInput(session,'dateRange',start = input$dateRange_reporting[1], e
     {
       uppers = uppers[,-1]
       lowers = lowers[,-1]
-      if(input$mode_op_uag)
+      if(input$agg_choice == 'Min')
       {
         upper = round(apply(uppers, 1, min),2)
         lower = round(apply(lowers, 1, max),2)
       }
-      else{
+      if(input$agg_choice == 'Max'){
         upper = round(apply(uppers, 1, max),2)
         lower = round(apply(lowers, 1, min),2)
+      }
+      if(input$agg_choice == 'Mean'){
+        upper = round(apply(uppers, 1, mean),2)
+        lower = round(apply(lowers, 1, mean),2)
+      }
+      if(input$agg_choice == 'Median'){
+        upper = round(apply(uppers, 1, median),2)
+        lower = round(apply(lowers, 1, median),2)
       }
       
     }
